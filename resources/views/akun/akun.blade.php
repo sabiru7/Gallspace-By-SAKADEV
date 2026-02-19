@@ -409,18 +409,33 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
 </div>
 
   <!-- Right Sidebar -->
-  <div>
-    <div class="card-slim">
-      <h6>Saran Teman</h6>
-      @for($i=1;$i<=3;$i++)
-      <div class="friend-item d-flex align-items-center gap-2 mb-2">
-        <img src="{{ asset('images/suggest'.$i.'.jpg') }}">
-        <div><strong>Suggested {{ $i }}</strong></div>
-      </div>
-      @endfor
-    </div>
-  </div>
+<div>
+  <div class="card-slim">
+    <h6>Teman</h6>
 
+    <div class="friend-item d-flex align-items-center gap-2 mb-2">
+        <img src="{{ asset('images/tewa.jpg') }}" 
+             width="40" height="40"
+             style="border-radius:50%; object-fit:cover;">
+        <div><strong>Pemalas YT</strong></div>
+    </div>
+
+    <div class="friend-item d-flex align-items-center gap-2 mb-2">
+        <img src="{{ asset('images/anime.jpg') }}" 
+             width="40" height="40"
+             style="border-radius:50%; object-fit:cover;">
+        <div><strong>Wibu kalcer</strong></div>
+    </div>
+
+    <div class="friend-item d-flex align-items-center gap-2 mb-2">
+        <img src="{{ asset('images/hama.jpg') }}" 
+             width="40" height="40"
+             style="border-radius:50%; object-fit:cover;">
+        <div><strong>Pacarnya Iwan</strong></div>
+    </div>
+
+  </div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -439,6 +454,5 @@ tabLinks.forEach(link => {
   });
 });
 </script>
-
 </body>
 </html>

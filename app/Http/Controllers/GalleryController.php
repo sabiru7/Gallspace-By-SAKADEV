@@ -95,5 +95,24 @@ public function akun()
     // Kirim ke view akun.blade.php
     return view('akun.akun', compact('images'));
 }
+public function trending()
+{
+    // 🔹 Ambil semua post dari database
+    $images = Post::latest()->get();
+
+    // 🔹 Ambil gambar dari folder public/trending
+    $trendingPath = public_path('trending');
+    $trendingImages = [];
+
+    if (File::exists($trendingPath)) {
+        $files = File::files($trendingPath);
+
+        foreach ($files as $file) {
+            $trendingImages[] = asset('trending/' . $file->getFilename());
+        }
+    }
+
+    return view('jelajah', compact('images', 'trendingImages'));
+}
 
 }

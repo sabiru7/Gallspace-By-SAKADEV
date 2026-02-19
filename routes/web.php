@@ -79,3 +79,41 @@ route::middleware('auth')->group(function () {
     // Halaman edit profile → URL /edit, nama route 'edit'
     Route::get('/akun.edit', [ProfileController::class, 'edit'])->name('edit');
 });
+//jelajah
+Route::get('/jelajah', function () {
+
+    // 🔹 EXPLORE
+    $explorePath = public_path('explore');
+    $exploreImages = [];
+
+    if (File::exists($explorePath)) {
+        foreach (File::files($explorePath) as $file) {
+            $exploreImages[] = asset('explore/' . $file->getFilename());
+        }
+    }
+
+    // 🔹 TRENDING
+    $trendingPath = public_path('trending');
+    $trendingImages = [];
+
+    if (File::exists($trendingPath)) {
+        foreach (File::files($trendingPath) as $file) {
+            $trendingImages[] = asset('trending/' . $file->getFilename());
+        }
+    }
+
+    $categories = [
+        'photography',
+        'anime',
+        'architecture',
+        'art',
+        'food',
+        'memes'
+    ];
+
+    return view('jelajah.jelajah', compact(
+        'exploreImages',
+        'trendingImages',
+        'categories'
+    ));
+});

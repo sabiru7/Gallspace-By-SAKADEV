@@ -77,14 +77,53 @@
     </a>
 
     <!-- MENU -->
-    <div class="hidden md:flex space-x-8 text-gray-300 font-medium">
-        <a href="/" class="hover:text-white transition">Home</a>
-        <a href="#" class="hover:text-white transition text-red-400">Fantasy</a>
-        <a href="#" class="hover:text-white transition text-blue-400">Anime</a>
-        <a href="#" class="hover:text-white transition text-green-400">Meme</a>
-        <a href="/upload" class="hover:text-white transition text-pink-400">Upload</a>
-    </div>
+    <div class="hidden md:flex items-center space-x-8 text-gray-250 font-medium">
+<div class="hidden md:flex justify-center items-center flex-1">
 
+    <nav class="flex items-center gap-10 text-gray-250 text-sm font-medium">
+
+        <!-- Home -->
+        <a href="/dashboard"
+           class="group flex items-center gap-2 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-5 h-5 transition group-hover:scale-110"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 10.5L12 3l9 7.5M4.5 9.75V20h5.25v-6h4.5v6H19.5V9.75"/>
+            </svg>
+            <span>Home</span>
+        </a>
+
+        <!-- Explore -->
+        <a href="/jelajah"
+           class="group flex items-center gap-2 text-yellow-400 border-b-2 border-yellow-400 pb-1">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-5 h-5"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/>
+            </svg>
+            <span>Explore</span>
+        </a>
+
+        <!-- Upload -->
+        <a href="/upload"
+           class="group flex items-center gap-2 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-5 h-5 transition group-hover:scale-110"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0l-3 3m3-3l3 3"/>
+            </svg>
+            <span>Upload</span>
+        </a>
+
+    </nav>
+
+</div>
     <!-- AUTH SECTION -->
 @auth
     <!-- Sudah Login -->
@@ -128,25 +167,25 @@
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div class="category-card">
-            <img src="{{ asset('images/fantasi.jpg') }}" class="w-full h-40 object-cover">
+            <img src="{{ asset('explore/fantasi.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
             <div class="category-text">fantasy</div>
         </div>
 
         <div class="category-card">
-            <img src="{{ asset('images/tewa.jpg') }}" class="w-full h-40 object-cover">
+            <img src="{{ asset('explore/tewa.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
             <div class="category-text">memes</div>
         </div>
 
         <div class="category-card">
-            <img src="{{ asset('images/gojokiko.jpg') }}" class="w-full h-40 object-cover">
+            <img src="{{ asset('explore/gojokiko.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
             <div class="category-text">anime</div>
         </div>
 
         <div class="category-card">
-            <img src="{{ asset('images/media.jpg') }}" class="w-full h-40 object-cover">
+            <img src="{{ asset('explore/media.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
             <div class="category-text">media social</div>
         </div>
