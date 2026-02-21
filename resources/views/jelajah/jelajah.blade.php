@@ -198,7 +198,7 @@ body{padding:20px}
 <div class="section-title">Browse Categories</div>
 <div class="categories">
 @foreach($categories as $category)
-    <a href="/category/{{ $category }}" class="card {{ $category }}">
+    <a href="/jelajah/{{ $category }}" class="card {{ $category }}">
         <h3>{{ ucfirst($category) }}</h3>
         <span>View Photos</span>
     </a>

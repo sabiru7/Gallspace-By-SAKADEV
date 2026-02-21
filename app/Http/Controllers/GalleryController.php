@@ -115,4 +115,61 @@ public function trending()
     return view('jelajah', compact('images', 'trendingImages'));
 }
 
+
+// 🔹 HALAMAN JELAJAH: tampilkan semua gambar dari folder public/images
+    public function anime()
+    {
+        $path = public_path('anime');
+
+        $images = [];
+
+        if (File::exists($path)) {
+            $files = File::files($path);
+
+            foreach ($files as $file) {
+                $images[] = asset('anime/' . $file->getFilename());
+            }
+        }
+
+        return view('anime', ['images' => $images]);
+    }
+// 🔹 HALAMAN JELAJAH: tampilkan semua gambar dari folder public/images
+    public function photography()
+    {
+        $path = public_path('photography');
+
+        $images = [];
+
+        if (File::exists($path)) {
+            $files = File::files($path);
+
+            foreach ($files as $file) {
+                $images[] = asset('photography/' . $file->getFilename());
+            }
+        }
+
+        return view('photography', ['images' => $images]);
+    }
+    public function art()
+    {
+        $path = public_path('art');
+
+        $images = [];
+
+        if (File::exists($path)) {
+            $files = File::files($path);
+
+            foreach ($files as $file) {
+                $images[] = asset('art/' . $file->getFilename());
+            }
+        }
+
+        return view('art', ['images' => $images]);
+    }
+        public function memes()
+        {
+            $path = public_path('meme');
+    
+            $images = [];
+}
 }

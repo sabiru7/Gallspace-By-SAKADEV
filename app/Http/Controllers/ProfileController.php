@@ -59,39 +59,39 @@ class ProfileController extends Controller
     // ==============================
     // UPDATE AKUN
     // ==============================
-    public function update(Request $request)
-    {
-        $request->validate([
-            'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'status'   => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
-        ]);
+public function update(Request $request)
+{
+    $request->validate([
+        'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'status'   => 'nullable|string|max:255',
+        'location' => 'nullable|string|max:255',
+    ]);
 
-        $user = Auth::user();
-        $profile = Profile::firstOrCreate([
-            'user_id' => $user->id
-        ]);
+    $user = Auth::user();
 
-        if ($request->hasFile('avatar')) {
+    $profile = Profile::firstOrCreate([
+        'user_id' => $user->id
+    ]);
 
-            if ($profile->avatar && file_exists(public_path('profile/'.$profile->avatar))) {
-                unlink(public_path('profile/'.$profile->avatar));
-            }
+    if ($request->hasFile('avatar')) {
 
-            $file = $request->file('avatar');
-            $filename = time().'_'.$file->getClientOriginalName();
-            $file->move(public_path('profile'), $filename);
-
-            $profile->avatar = $filename;
+        if ($profile->avatar && file_exists(public_path('profile/'.$profile->avatar))) {
+            unlink(public_path('profile/'.$profile->avatar));
         }
 
-        $profile->status   = $request->status;
-        $profile->location = $request->location;
-        $profile->save();
+        $file = $request->file('avatar');
+        $filename = time().'_'.$file->getClientOriginalName();
+        $file->move(public_path('profile'), $filename);
 
-        return redirect()->route('akun.akun')->with('success','Akun berhasil diperbarui!');
+        $profile->avatar = $filename;
     }
 
+    $profile->status   = $request->status;
+    $profile->location = $request->location;
+    $profile->save();
+
+    return redirect()->route('akun')->with('success','Akun berhasil diperbarui!');
+}
 
     // ==============================
     // UPLOAD IMAGE

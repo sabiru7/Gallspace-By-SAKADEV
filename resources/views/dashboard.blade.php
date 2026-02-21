@@ -166,30 +166,40 @@
     </h2>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+
+    <a href="{{ route('jelajah.art') }}">
         <div class="category-card">
             <img src="{{ asset('explore/fantasi.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
             <div class="category-text">fantasy</div>
         </div>
+    </a>
 
+    <a href="{{ route('jelajah.meme') }}">
         <div class="category-card">
             <img src="{{ asset('explore/tewa.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
             <div class="category-text">memes</div>
         </div>
+    </a>
 
+    <a href="{{ route('jelajah.anime') }}">
         <div class="category-card">
             <img src="{{ asset('explore/gojokiko.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
             <div class="category-text">anime</div>
         </div>
+    </a>
 
+    <a href="{{ route('jelajah.photography') }}">
         <div class="category-card">
-            <img src="{{ asset('explore/media.jpg') }}" class="w-full h-40 object-cover">
+            <img src="{{ asset('explore/gunung.jpg') }}" class="w-full h-40 object-cover">
             <div class="overlay"></div>
-            <div class="category-text">media social</div>
+            <div class="category-text">Photography</div>
         </div>
-    </div>
+    </a>
+
+</div>
 </div>
 
 <!-- GALLERY -->
@@ -226,6 +236,5 @@
         });
     });
 </script>
-
 </body>
 </html>

@@ -307,13 +307,13 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
 
 <!-- Cover -->
 <div class="profile-header">
-  <img src="{{ asset('images/anime.jpg') }}" class="cover-photo">
+  <img src="{{ asset('anime/anime.jpg') }}" class="cover-photo">
 </div>
 <!-- Profile Card -->
 <div class="profile-card">
   <!-- Avatar -->
   <div class="avatar-wrap">
-    <img class="avatar" src="{{ asset('images/'.$avatar) }}">
+    <img class="avatar" src="{{ asset('profile/'.$avatar) }}">
     <a href="{{ route('akun.edit') }}" class="avatar-camera">
       <i class="bi bi-camera"></i>
     </a>
@@ -326,11 +326,10 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
 
     <div class="profile-tabs">
       <div class="tab-link active" data-tab="posts">Postingan</div>
-      <div class="tab-link" data-tab="photos">Foto</div>
+      <div class="tab-link" data-tab="photos">Download</div>
     </div>
   </div>
 </div>
-
 <!-- Main Content -->
 <div class="container-main">
 
@@ -381,7 +380,7 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
 {{-- ================= FOTO ================= --}}
 <div id="tab-photos" class="tab-section d-none">
     <div class="card-slim photos-wrapper">
-        <h6 class="photos-title">Foto</h6>
+        <h6 class="photos-title">Download</h6>
         <div class="photos-grid">
             @forelse($images as $image)
                 <div class="photo-item">

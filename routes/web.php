@@ -68,17 +68,17 @@ Route::get('/akun', function () {
 // Edit profile (hanya untuk user yang login)
 Route::middleware('auth')->group(function () {
     // Halaman profile → URL /akun, nama route 'akun'
-    Route::get('/akun', [ProfileController::class, 'index'])->name('akun');
-    // Form edit profile
-    Route::get('/akun/edit', [ProfileController::class, 'edit'])->name('akun.edit');
-    // Update profile
-    Route::post('/akun/update', [ProfileController::class, 'update'])->name('akun.update');
+Route::get('/akun', [ProfileController::class, 'index'])->name('akun');
+Route::get('/akun/edit', [ProfileController::class, 'edit'])->name('akun.edit');
+Route::post('/akun/update', [ProfileController::class, 'update'])->name('akun.update');
 });
 //edit
 route::middleware('auth')->group(function () {
     // Halaman edit profile → URL /edit, nama route 'edit'
     Route::get('/akun.edit', [ProfileController::class, 'edit'])->name('edit');
 });
+Route::get('/akun', [ProfileController::class, 'index'])->name('akun');
+Route::post('/akun/update', [ProfileController::class, 'update'])->name('akun.update');
 //jelajah
 Route::get('/jelajah', function () {
 
@@ -114,6 +114,67 @@ Route::get('/jelajah', function () {
     return view('jelajah.jelajah', compact(
         'exploreImages',
         'trendingImages',
-        'categories'
+        'categories',
+        
     ));
 });
+//anime
+Route::get('/jelajah/anime', function () {
+
+    $animePath = public_path('anime');
+    $images = [];
+
+    if (File::exists($animePath)) {
+        foreach (File::files($animePath) as $file) {
+            $images[] = asset('anime/' . $file->getFilename());
+        }
+    }
+
+    return view('jelajah.anime', compact('images'));
+
+})->name('jelajah.anime');
+//photography
+Route::get('/jelajah/photography', function () {
+
+    $folder = 'photography';
+    $path = public_path($folder);
+    $images = [];
+
+    if (File::exists($path)) {
+        foreach (File::files($path) as $file) {
+            $images[] = asset($folder . '/' . $file->getFilename());
+        }
+    }
+
+    return view('jelajah.photography', compact('images'));
+
+})->name('jelajah.photography');
+// art
+Route::get('/jelajah/art', function () {
+
+    $path = public_path('art');
+    $images = [];
+
+    if (File::exists($path)) {
+        foreach (File::files($path) as $file) {
+            $images[] = asset('art/' . $file->getFilename());
+        }
+    }
+
+    return view('jelajah.art', compact('images'));
+})->name('jelajah.art');
+
+//meme
+Route::get('/jelajah/meme', function () {
+
+    $path = public_path('memes');
+    $images = [];
+
+    if (File::exists($path)) {
+        foreach (File::files($path) as $file) {
+            $images[] = asset('memes/' . $file->getFilename());
+        }
+    }
+
+    return view('jelajah.meme', compact('images'));
+})->name('jelajah.meme');
