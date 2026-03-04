@@ -9,29 +9,27 @@ use Illuminate\Support\Facades\Auth;
 
 class GalleryController extends Controller
 {
-    // 🔹 Folder tempat gambar
     protected $imagePath = 'images';
 
-    // 🔹 DASHBOARD / GALERI PUBLIK: tampilkan semua gambar
+    // DASHBOARD / GALERI PUBLIK
     public function index()
     {
-        // Ambil semua post terbaru
         $images = Post::latest()->get();
-
         return view('dashboard', compact('images'));
     }
 
-    // 🔹 HALAMAN UPLOAD FORM
+    // FORM UPLOAD
     public function create()
     {
         return view('upload');
     }
 
-    // 🔹 PROSES UPLOAD
+    // PROSES UPLOAD
     public function store(Request $request)
     {
         $request->validate([
             'image' => 'required|image|mimes:jpg,jpeg,png|max:20480', // max 20MB
+            'title' => 'required|string|max:255',
         ]);
 
         // Pastikan folder ada
@@ -50,126 +48,124 @@ class GalleryController extends Controller
         Post::create([
             'user_id' => Auth::id(),
             'image'   => $filename,
+            'title'   => $request->input('title'), // ❌ sebelumnya typo 'tittle'
         ]);
 
         return redirect()->route('akun')
                          ->with('success', 'Image uploaded successfully!');
     }
 
-    // 🔹 DELETE IMAGE
+    // DELETE IMAGE
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
-        
-        // Hanya bisa dihapus oleh pemilik
+
         if ($post->user_id !== Auth::id()) {
             return back()->with('error', 'Unauthorized action.');
         }
 
-        // Hapus file fisik
         $filePath = public_path($this->imagePath . '/' . $post->image);
         if (File::exists($filePath)) {
             File::delete($filePath);
         }
 
-        // Hapus record di DB
         $post->delete();
 
         return back()->with('success', 'Image deleted successfully.');
     }
 
-    // 🔹 DETAIL IMAGE
+    // DETAIL IMAGE
     public function show($id)
     {
         $post = Post::findOrFail($id);
         return view('gallery.show', compact('post'));
     }
-    // 🔹 HALAMAN USER AKUN: tampilkan gambar milik user yang login
-public function akun()
-{
-    // Ambil semua post milik user saat ini
-    $images = Post::where('user_id', Auth::id())
-                  ->latest()
-                  ->get();
 
-    // Kirim ke view akun.blade.php
-    return view('akun.akun', compact('images'));
-}
-public function trending()
-{
-    // 🔹 Ambil semua post dari database
-    $images = Post::latest()->get();
-
-    // 🔹 Ambil gambar dari folder public/trending
-    $trendingPath = public_path('trending');
-    $trendingImages = [];
-
-    if (File::exists($trendingPath)) {
-        $files = File::files($trendingPath);
-
-        foreach ($files as $file) {
-            $trendingImages[] = asset('trending/' . $file->getFilename());
-        }
+    // HALAMAN USER AKUN
+    public function akun()
+    {
+        $images = Post::where('user_id', Auth::id())->latest()->get();
+        return view('akun.akun', compact('images'));
     }
 
-    return view('jelajah', compact('images', 'trendingImages'));
-}
+    // TRENDING
+    public function trending()
+    {
+        $images = Post::latest()->get();
 
+        $trendingPath = public_path('trending');
+        $trendingImages = [];
 
-// 🔹 HALAMAN JELAJAH: tampilkan semua gambar dari folder public/images
+        if (File::exists($trendingPath)) {
+            $files = File::files($trendingPath);
+            foreach ($files as $file) {
+                $trendingImages[] = asset('trending/' . $file->getFilename());
+            }
+        }
+
+        return view('jelajah', compact('images', 'trendingImages'));
+    }
+
+    // HALAMAN JELAJAH: anime
     public function anime()
     {
-        $path = public_path('anime');
-
-        $images = [];
-
-        if (File::exists($path)) {
-            $files = File::files($path);
-
-            foreach ($files as $file) {
-                $images[] = asset('anime/' . $file->getFilename());
-            }
-        }
-
-        return view('anime', ['images' => $images]);
+        return $this->loadImages('anime', 'anime');
     }
-// 🔹 HALAMAN JELAJAH: tampilkan semua gambar dari folder public/images
+
+    // HALAMAN JELAJAH: photography
     public function photography()
     {
-        $path = public_path('photography');
-
-        $images = [];
-
-        if (File::exists($path)) {
-            $files = File::files($path);
-
-            foreach ($files as $file) {
-                $images[] = asset('photography/' . $file->getFilename());
-            }
-        }
-
-        return view('photography', ['images' => $images]);
+        return $this->loadImages('photography', 'photography');
     }
+
+    // HALAMAN JELAJAH: art
     public function art()
     {
-        $path = public_path('art');
+        return $this->loadImages('art', 'art');
+    }
 
+    // HALAMAN JELAJAH: memes
+    public function memes()
+    {
+        return $this->loadImages('meme', 'meme');
+    }
+
+    // PRIVATE HELPER FUNCTION UNTUK LOAD IMAGE DARI FOLDER
+    private function loadImages($folder, $viewName)
+    {
+        $path = public_path($folder);
         $images = [];
 
         if (File::exists($path)) {
             $files = File::files($path);
-
             foreach ($files as $file) {
-                $images[] = asset('art/' . $file->getFilename());
+                $images[] = asset($folder . '/' . $file->getFilename());
             }
         }
 
-        return view('art', ['images' => $images]);
+        return view($viewName, ['images' => $images]);
     }
-        public function memes()
-        {
-            $path = public_path('meme');
-    
-            $images = [];
+    public function deleteFolderImage(Request $request)
+{
+    $request->validate([
+        'folder' => 'required|string',
+        'filename' => 'required|string',
+    ]);
+
+    $allowedFolders = ['anime', 'photography', 'art', 'meme', 'trending', 'images', 'post'];
+
+    // Cegah akses folder lain
+    if (!in_array($request->folder, $allowedFolders)) {
+        return back()->with('error', 'Invalid folder.');
+    }
+
+    $filePath = public_path($request->folder . '/' . $request->filename);
+
+    if (File::exists($filePath)) {
+        File::delete($filePath);
+        return back()->with('success', 'Image deleted successfully!');
+    }
+
+    return back()->with('error', 'File not found.');
 }
 }

@@ -96,7 +96,7 @@ body {
     @auth
         <a href="{{ route('akun') }}"
            class="w-10 h-10 rounded-full overflow-hidden border border-white/30">
-            <img src="{{ asset('images/' . (auth()->user()->profile->avatar ?? 'gojokiko.jpg')) }}"
+            <img src="{{ asset('profile/' . (auth()->user()->profile->avatar ?? 'gojokiko.jpg')) }}"
                  class="w-full h-full object-cover">
         </a>
     @else

@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
     // Proses upload galeri
     Route::post('/upload', [GalleryController::class, 'store'])
         ->name('gallery.store');
+
+        // Hapus gambar dari galeri
+        Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])
+            ->name('gallery.destroy');
 });
 // =====================
 // GALERI PUBLIK (TIDAK PERLU LOGIN)

@@ -284,7 +284,7 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
         <!-- User Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown">
-            <img src="{{ asset('images/'.$avatar) }}" class="rounded-circle border border-2 border-dark me-2" width="36" height="36" style="object-fit:cover;">
+            <img src="{{ asset('profile/'.$avatar) }}" class="rounded-circle border border-2 border-dark me-2" width="36" height="36" style="object-fit:cover;">
             <span class="fw-medium">{{ Auth::user()->name }}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end bg-dark text-light">
@@ -344,40 +344,56 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
   </div>
 <!-- ================== CONTENT UTAMA (POSTS, PHOTOS, ABOUT) ================== -->
  <div id="tabContent">
-
  {{-- ================= POSTINGAN ================= --}}
 <div id="tab-posts" class="tab-section">
-    <div class="card-slim">
-        <h6>Postingan</h6>
+    <div class="card-slim max-w-2xl mx-auto">
+        <h6 class="text-lg font-semibold mb-3">Postingan</h6>
 
-        <div class="grid grid-cols-3 gap-3 mt-3">
+        <div class="grid grid-cols-3 gap-3">
+            @php $count = 0; @endphp
 
-            @php $hasPost = false; @endphp
+            @forelse($posts as $post)
+                @if($post->image && $count < 9)
+                    @php $count++; @endphp
 
-            @foreach($posts as $post)
-                @if($post->image)
-                    @php $hasPost = true; @endphp
+                    <div class="relative aspect-square rounded-lg overflow-hidden group">
 
-                    <div class="aspect-square overflow-hidden rounded-lg bg-gray-800">
-                        <img src="{{ asset('post/'.$post->image) }}"
-                             class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                        <!-- IMAGE -->
+                        <img 
+                            src="{{ asset('images/'.$post->image) }}"
+                            class="w-full h-full object-cover"
+                        >
+
+                        <!-- DELETE BUTTON (muncul saat klik / focus) -->
+                        <form 
+                            action="{{ route('gallery.destroy', $post->id) }}" 
+                            method="POST"
+                            class="absolute top-2 right-2 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition"
+                        >
+                            @csrf
+                            @method('DELETE')
+
+                            <button 
+                                type="submit"
+                                onclick="return confirm('Hapus gambar ini?')"
+                                class="bg-red-600 text-white text-xs px-2 py-1 rounded"
+                            >
+                                Hapus
+                            </button>
+                        </form>
+
                     </div>
-                @endif
-            @endforeach
 
-            @if(!$hasPost)
-                <div class="col-span-3 text-center text-gray-400">
+                @endif
+            @empty
+                <div class="col-span-3 text-center text-gray-400 py-6">
                     Belum ada postingan.
                 </div>
-            @endif
-
+            @endforelse
         </div>
     </div>
 </div>
-
-
-
-{{-- ================= FOTO ================= --}}
+{{-- ============= Download ================= --}}
 <div id="tab-photos" class="tab-section d-none">
     <div class="card-slim photos-wrapper">
         <h6 class="photos-title">Download</h6>
