@@ -39,19 +39,18 @@
 
             {{-- FOTO PROFILE --}}
             <div class="text-center">
-
                 <div id="drop-area"
                      class="w-40 h-40 mx-auto rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center cursor-pointer hover:border-white transition overflow-hidden">
 
                     <input type="file" name="avatar" id="fileInput" hidden>
 
                     @php
-                        $avatar = auth()->user()->avatar;
+                        $avatar = $profile->avatar ?? null;
                     @endphp
 
                     @if($avatar)
                         <img id="preview"
-                             src="{{ asset($avatar) }}"
+                             src="{{ asset('profile/'.$avatar) }}"
                              class="w-full h-full object-cover">
                     @else
                         <span id="placeholder" class="text-gray-400 text-sm">
@@ -64,7 +63,7 @@
                 </div>
 
                 <p class="text-xs text-gray-500 mt-2">
-                    JPG, PNG max 5MB
+                    JPG, PNG max 2MB
                 </p>
             </div>
 
@@ -73,18 +72,18 @@
                 <label class="text-sm text-gray-400">Name</label>
                 <input type="text"
                        name="name"
-                       value="{{ old('name', auth()->user()->name) }}"
+                       value="{{ old('name', $user->name) }}"
                        class="w-full bg-zinc-800 p-3 rounded text-white mt-1"
                        required>
             </div>
 
-            {{-- BIO --}}
-             <div>
-            <label class="text-sm text-gray-400">Status / Bio</label>
-            <textarea name="bio"
-                  rows="3"
-                  class="w-full bg-zinc-800 p-3 rounded text-white mt-1"
-                  placeholder="Tell something about you...">{{ old('status', auth()->user()->bio) }}</textarea>
+            {{-- STATUS / BIO --}}
+            <div>
+                <label class="text-sm text-gray-400">Status / Bio</label>
+                <textarea name="status"
+                          rows="3"
+                          class="w-full bg-zinc-800 p-3 rounded text-white mt-1"
+                          placeholder="Tell something about you...">{{ old('status', $profile->status ?? '') }}</textarea>
             </div>
 
             {{-- PRIVATE ACCOUNT --}}
@@ -97,8 +96,9 @@
                        name="is_private"
                        value="1"
                        class="w-5 h-5"
-                       {{ old('is_private', auth()->user()->is_private) ? 'checked' : '' }}>
+                       {{ old('is_private', $user->is_private) ? 'checked' : '' }}>
             </div>
+
             {{-- BUTTON --}}
             <button type="submit"
                     class="w-full bg-white text-black font-bold py-3 rounded hover:bg-gray-300 transition">
@@ -108,6 +108,7 @@
         </form>
     </div>
 </div>
+
 <script>
 const dropArea = document.getElementById("drop-area");
 const fileInput = document.getElementById("fileInput");

@@ -68,10 +68,11 @@ public function update(Request $request)
         'location' => 'nullable|string|max:255',
     ]);
 
-    $user = Auth::user();
+    $user = \App\Models\User::findOrFail(Auth::id());
 
-    // SIMPAN NAME KE USERS
+    // UPDATE NAMA USER
     $user->name = $request->name;
+    $user->save();
     $profile = Profile::firstOrCreate([
         'user_id' => $user->id
     ]);
@@ -144,4 +145,7 @@ public function update(Request $request)
 
         return back()->with('success','Gambar berhasil dihapus!');
     }
+    // ==============================
+    // DELETE IMAGE
+    // ==============================
 }
