@@ -48,7 +48,7 @@ class GalleryController extends Controller
         Post::create([
             'user_id' => Auth::id(),
             'image'   => $filename,
-            'title'   => $request->input('title'), // ❌ sebelumnya typo 'tittle'
+            'title'   => $request->input('title'), 
         ]);
 
         return redirect()->route('akun')
@@ -143,7 +143,7 @@ class GalleryController extends Controller
             }
         }
 
-        return view($viewName, ['images' => $images]);
+        return view($viewName, ['images','post' => $images]);
     }
     public function deleteFolderImage(Request $request)
 {
@@ -168,4 +168,6 @@ class GalleryController extends Controller
 
     return back()->with('error', 'File not found.');
 }
+
+
 }

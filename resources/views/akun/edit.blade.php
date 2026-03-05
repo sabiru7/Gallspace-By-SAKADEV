@@ -79,12 +79,12 @@
             </div>
 
             {{-- BIO --}}
-            <div>
-                <label class="text-sm text-gray-400">Status / Bio</label>
-                <textarea name="bio"
-                          rows="3"
-                          class="w-full bg-zinc-800 p-3 rounded text-white mt-1"
-                          placeholder="Tell something about you...">{{ old('bio', auth()->user()->bio) }}</textarea>
+             <div>
+            <label class="text-sm text-gray-400">Status / Bio</label>
+            <textarea name="bio"
+                  rows="3"
+                  class="w-full bg-zinc-800 p-3 rounded text-white mt-1"
+                  placeholder="Tell something about you...">{{ old('status', auth()->user()->bio) }}</textarea>
             </div>
 
             {{-- PRIVATE ACCOUNT --}}

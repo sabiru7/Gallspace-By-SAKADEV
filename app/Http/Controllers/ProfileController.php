@@ -62,6 +62,7 @@ class ProfileController extends Controller
 public function update(Request $request)
 {
     $request->validate([
+        'name'     => 'required|string|max:255',
         'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         'status'   => 'nullable|string|max:255',
         'location' => 'nullable|string|max:255',
@@ -69,6 +70,8 @@ public function update(Request $request)
 
     $user = Auth::user();
 
+    // SIMPAN NAME KE USERS
+    $user->name = $request->name;
     $profile = Profile::firstOrCreate([
         'user_id' => $user->id
     ]);
@@ -92,7 +95,6 @@ public function update(Request $request)
 
     return redirect()->route('akun')->with('success','Akun berhasil diperbarui!');
 }
-
     // ==============================
     // UPLOAD IMAGE
     // ==============================

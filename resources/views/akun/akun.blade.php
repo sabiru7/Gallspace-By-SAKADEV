@@ -322,7 +322,9 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
   <!-- Meta (nama, status, tabs) -->
   <div class="profile-meta" style="margin-top:80px;"> <!-- <-- margin-top menyesuaikan avatar -->
     <h3 style="margin-bottom:5px;">{{ Auth::user()->name }}</h3>
-    <p class="small-muted">{{ $profile->status ?? 'Belum ada status' }}</p>
+    <p class="small-muted">
+    {{ auth()->user()->bio ?? 'Belum ada status' }}
+</p>
 
     <div class="profile-tabs">
       <div class="tab-link active" data-tab="posts">Postingan</div>
@@ -345,52 +347,42 @@ $avatar = $profile->avatar ?? 'gojokiko.jpg';
 <!-- ================== CONTENT UTAMA (POSTS, PHOTOS, ABOUT) ================== -->
  <div id="tabContent">
  {{-- ================= POSTINGAN ================= --}}
-<div id="tab-posts" class="tab-section">
-    <div class="card-slim max-w-2xl mx-auto">
-        <h6 class="text-lg font-semibold mb-3">Postingan</h6>
+<div id="tab-posts" class="tab-section d-none">
+    <div class="card-slim photos-wrapper">
+        <h6 class="photos-title">Postingan</h6>
+        <div class="photos-grid">
+            @forelse($posts->take(9) as $post)
 
-        <div class="grid grid-cols-3 gap-3">
-            @php $count = 0; @endphp
+                <div class="photo-item relative group">
+                    <!-- IMAGE -->
+                    <img 
+                        src="{{ asset('images/'.$post->image) }}" 
+                        alt="Post Image"
+                    >
+                    <!-- DELETE BUTTON -->
+                    <form 
+                        action="{{ route('gallery.destroy',$post->id) }}" 
+                        method="POST"
+                        class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition"
+                    >
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-600 text-white p-1 rounded-full hover:bg-red-700">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
 
-            @forelse($posts as $post)
-                @if($post->image && $count < 9)
-                    @php $count++; @endphp
+                </div>
 
-                    <div class="relative aspect-square rounded-lg overflow-hidden group">
-
-                        <!-- IMAGE -->
-                        <img 
-                            src="{{ asset('images/'.$post->image) }}"
-                            class="w-full h-full object-cover"
-                        >
-
-                        <!-- DELETE BUTTON (muncul saat klik / focus) -->
-                        <form 
-                            action="{{ route('gallery.destroy', $post->id) }}" 
-                            method="POST"
-                            class="absolute top-2 right-2 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition"
-                        >
-                            @csrf
-                            @method('DELETE')
-
-                            <button 
-                                type="submit"
-                                onclick="return confirm('Hapus gambar ini?')"
-                                class="bg-red-600 text-white text-xs px-2 py-1 rounded"
-                            >
-                                Hapus
-                            </button>
-                        </form>
-
-                    </div>
-
-                @endif
             @empty
-                <div class="col-span-3 text-center text-gray-400 py-6">
+
+                <div class="empty-text">
                     Belum ada postingan.
                 </div>
+
             @endforelse
         </div>
+
     </div>
 </div>
 {{-- ============= Download ================= --}}

@@ -78,6 +78,7 @@ Route::post('/akun/update', [ProfileController::class, 'update'])->name('akun.up
 });
 //edit
 route::middleware('auth')->group(function () {
+    
     // Halaman edit profile → URL /edit, nama route 'edit'
     Route::get('/akun.edit', [ProfileController::class, 'edit'])->name('edit');
 });

@@ -39,7 +39,7 @@ return new class extends Migration
             $table->index('is_private');
 
             $table->timestamps();
-            $table->softDeletes(); // untuk soft delete
+            $table->softDeletes(); 
         });
     }
 
