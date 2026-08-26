@@ -145,7 +145,4 @@ public function update(Request $request)
 
         return back()->with('success','Gambar berhasil dihapus!');
     }
-    // ==============================
-    // DELETE IMAGE
-    // ==============================
 }

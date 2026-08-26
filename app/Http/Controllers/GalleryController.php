@@ -11,84 +11,154 @@ class GalleryController extends Controller
 {
     protected $imagePath = 'images';
 
+
+    // =====================================================
     // DASHBOARD / GALERI PUBLIK
+    // =====================================================
+
     public function index()
     {
         $images = Post::latest()->get();
-        return view('dashboard', compact('images'));
+
+        return view('dashboard.dashboard', compact('images'));
     }
 
+
+    // =====================================================
     // FORM UPLOAD
+    // =====================================================
+
     public function create()
     {
-        return view('upload');
+        // File:
+        // resources/views/dashboard/upload.blade.php
+
+        return view('dashboard.upload');
     }
 
+
+    // =====================================================
     // PROSES UPLOAD
+    // =====================================================
+
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:20480', // max 20MB
+            'image' => 'required|image|mimes:jpg,jpeg,png|max:20480',
             'title' => 'required|string|max:255',
         ]);
 
-        // Pastikan folder ada
+
+        // Pastikan folder public/images ada
         $path = public_path($this->imagePath);
+
         if (!File::exists($path)) {
             File::makeDirectory($path, 0755, true);
         }
 
-        $file = $request->file('image');
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
 
-        // simpan ke folder public/images
+        // Ambil file
+        $file = $request->file('image');
+
+
+        // Buat nama file unik
+        $filename = time()
+            . '_'
+            . uniqid()
+            . '.'
+            . $file->getClientOriginalExtension();
+
+
+        // Simpan ke:
+        // public/images
         $file->move($path, $filename);
 
-        // simpan ke database
+
+        // Simpan data ke database
         Post::create([
             'user_id' => Auth::id(),
             'image'   => $filename,
-            'title'   => $request->input('title'), 
+            'title'   => $request->input('title'),
         ]);
 
-        return redirect()->route('akun')
-                         ->with('success', 'Image uploaded successfully!');
+
+        // Setelah upload kembali ke akun
+        return redirect()
+            ->route('akun')
+            ->with('success', 'Image uploaded successfully!');
     }
 
-    // DELETE IMAGE
+
+    // =====================================================
+    // DELETE IMAGE DARI DATABASE / GALERI
+    // =====================================================
+
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
 
+
+        // Pastikan hanya pemilik yang bisa menghapus
         if ($post->user_id !== Auth::id()) {
-            return back()->with('error', 'Unauthorized action.');
+            return back()
+                ->with('error', 'Unauthorized action.');
         }
 
-        $filePath = public_path($this->imagePath . '/' . $post->image);
+
+        // Lokasi file
+        $filePath = public_path(
+            $this->imagePath . '/' . $post->image
+        );
+
+
+        // Hapus file
         if (File::exists($filePath)) {
             File::delete($filePath);
         }
 
+
+        // Hapus database
         $post->delete();
 
-        return back()->with('success', 'Image deleted successfully.');
+
+        return back()
+            ->with('success', 'Image deleted successfully.');
     }
 
+
+    // =====================================================
     // DETAIL IMAGE
+    // =====================================================
+
     public function show($id)
     {
         $post = Post::findOrFail($id);
+
         return view('gallery.show', compact('post'));
     }
 
+
+    // =====================================================
     // HALAMAN USER AKUN
+    // =====================================================
+
     public function akun()
     {
-        $images = Post::where('user_id', Auth::id())->latest()->get();
-        return view('akun.akun', compact('images'));
+        $images = Post::where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view(
+            'akun.akun',
+            compact('images')
+        );
     }
 
+
+    // =====================================================
     // TRENDING
+    // =====================================================
+
     public function trending()
     {
         $images = Post::latest()->get();
@@ -96,78 +166,168 @@ class GalleryController extends Controller
         $trendingPath = public_path('trending');
         $trendingImages = [];
 
+
         if (File::exists($trendingPath)) {
+
             $files = File::files($trendingPath);
+
             foreach ($files as $file) {
-                $trendingImages[] = asset('trending/' . $file->getFilename());
+
+                $trendingImages[] = asset(
+                    'trending/' . $file->getFilename()
+                );
             }
         }
 
-        return view('jelajah', compact('images', 'trendingImages'));
+
+        return view(
+            'jelajah.jelajah',
+            compact(
+                'images',
+                'trendingImages'
+            )
+        );
     }
 
-    // HALAMAN JELAJAH: anime
+
+    // =====================================================
+    // HALAMAN JELAJAH - ANIME
+    // =====================================================
+
     public function anime()
     {
-        return $this->loadImages('anime', 'anime');
+        return $this->loadImages(
+            'anime',
+            'jelajah.anime'
+        );
     }
 
-    // HALAMAN JELAJAH: photography
+
+    // =====================================================
+    // HALAMAN JELAJAH - PHOTOGRAPHY
+    // =====================================================
+
     public function photography()
     {
-        return $this->loadImages('photography', 'photography');
+        return $this->loadImages(
+            'photography',
+            'jelajah.photography'
+        );
     }
 
-    // HALAMAN JELAJAH: art
+
+    // =====================================================
+    // HALAMAN JELAJAH - ART
+    // =====================================================
+
     public function art()
     {
-        return $this->loadImages('art', 'art');
+        return $this->loadImages(
+            'art',
+            'jelajah.art'
+        );
     }
 
-    // HALAMAN JELAJAH: memes
+
+    // =====================================================
+    // HALAMAN JELAJAH - MEMES
+    // =====================================================
+
     public function memes()
     {
-        return $this->loadImages('meme', 'meme');
+        return $this->loadImages(
+            'memes',
+            'jelajah.meme'
+        );
     }
 
-    // PRIVATE HELPER FUNCTION UNTUK LOAD IMAGE DARI FOLDER
+
+    // =====================================================
+    // LOAD IMAGE DARI FOLDER
+    // =====================================================
+
     private function loadImages($folder, $viewName)
     {
         $path = public_path($folder);
         $images = [];
 
+
         if (File::exists($path)) {
+
             $files = File::files($path);
+
             foreach ($files as $file) {
-                $images[] = asset($folder . '/' . $file->getFilename());
+
+                $images[] = asset(
+                    $folder . '/' . $file->getFilename()
+                );
             }
         }
 
-        return view($viewName, ['images','post' => $images]);
+
+        return view(
+            $viewName,
+            compact('images')
+        );
     }
+
+
+    // =====================================================
+    // DELETE IMAGE DARI FOLDER
+    // =====================================================
+
     public function deleteFolderImage(Request $request)
-{
-    $request->validate([
-        'folder' => 'required|string',
-        'filename' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'folder'   => 'required|string',
+            'filename' => 'required|string',
+        ]);
 
-    $allowedFolders = ['anime', 'photography', 'art', 'meme', 'trending', 'images', 'post'];
 
-    // Cegah akses folder lain
-    if (!in_array($request->folder, $allowedFolders)) {
-        return back()->with('error', 'Invalid folder.');
+        // Folder yang diperbolehkan
+        $allowedFolders = [
+            'anime',
+            'photography',
+            'art',
+            'memes',
+            'meme',
+            'trending',
+            'images',
+            'post',
+        ];
+
+
+        // Cegah akses folder lain
+        if (!in_array($request->folder, $allowedFolders)) {
+
+            return back()
+                ->with('error', 'Invalid folder.');
+        }
+
+
+        // Path file
+        $filePath = public_path(
+            $request->folder . '/' . $request->filename
+        );
+
+
+        // Hapus file
+        if (File::exists($filePath)) {
+
+            File::delete($filePath);
+
+            return back()
+                ->with(
+                    'success',
+                    'Image deleted successfully!'
+                );
+        }
+
+
+        return back()
+            ->with(
+                'error',
+                'File not found.'
+            );
     }
-
-    $filePath = public_path($request->folder . '/' . $request->filename);
-
-    if (File::exists($filePath)) {
-        File::delete($filePath);
-        return back()->with('success', 'Image deleted successfully!');
-    }
-
-    return back()->with('error', 'File not found.');
-}
-
-
 }
