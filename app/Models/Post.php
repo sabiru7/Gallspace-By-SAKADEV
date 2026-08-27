@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Post extends Model
 {
@@ -18,7 +19,7 @@ class Post extends Model
         'category',
         'is_private',
         'allow_download',
-        'allow_comment'
+        'allow_comment',
     ];
 
     /*
@@ -30,5 +31,34 @@ class Post extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | LIKE
+    |--------------------------------------------------------------------------
+    */
+
+    public function likes()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'likes',
+            'post_id',
+            'user_id'
+        )->withTimestamps();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMENT
+    |--------------------------------------------------------------------------
+    */
+
+    public function comments()
+    {
+        return DB::table('comments')
+            ->where('post_id', $this->id)
+            ->get();
     }
 }

@@ -1,2209 +1,2342 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Explore - GallSpace</title>
-
-
-    <!-- =====================================================
-         TAILWIND
-    ====================================================== -->
+    <title>GallSpace — Your Space for Creativity</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
-
-    <!-- =====================================================
-         BOOTSTRAP ICONS
-    ====================================================== -->
 
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
     >
 
-
-    <!-- =====================================================
-         GOOGLE FONT
-    ====================================================== -->
-
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
-
-    <!-- =====================================================
-         STYLE
-    ====================================================== -->
-
     <style>
-
-        /* =====================================================
-           ROOT
-        ====================================================== */
-
-        :root {
-
-            --primary: #0d6efd;
-
-            --background: #101010;
-
-            --card-bg: #1c1c1c;
-
-            --text: #eeeeee;
-
-            --muted: #999;
-
-            --border:
-                rgba(255,255,255,0.07);
-
-        }
-
-
-        /* =====================================================
-           BODY
-        ====================================================== */
-
         * {
             box-sizing: border-box;
         }
 
-        body {
+        :root {
+            --bg: #070707;
+            --bg-soft: #0d0d0d;
+            --surface: #111111;
+            --surface-2: #161616;
 
-            font-family:
-                'Poppins',
-                sans-serif;
+            --text: #f5f5f5;
+            --text-soft: #b4b4b4;
+            --muted: #707070;
 
-            background:
-                radial-gradient(
-                    circle at top,
-                    #1c1c1c 0%,
-                    #101010 42%,
-                    #080808 100%
-                );
+            --line: rgba(255,255,255,.09);
+            --line-hover: rgba(255,255,255,.18);
 
-            color: var(--text);
+            --accent: #ffffff;
+            --accent-inverse: #050505;
 
-            min-height: 100vh;
-
-            opacity: 0;
-
-            transition:
-                opacity .8s ease;
-
+            --shadow: rgba(0,0,0,.45);
         }
 
+        html.light {
+            --bg: #f5f5f3;
+            --bg-soft: #eeeeec;
+            --surface: #ffffff;
+            --surface-2: #f8f8f7;
+
+            --text: #111111;
+            --text-soft: #555555;
+            --muted: #888888;
+
+            --line: rgba(0,0,0,.09);
+            --line-hover: rgba(0,0,0,.18);
+
+            --accent: #080808;
+            --accent-inverse: #ffffff;
+
+            --shadow: rgba(0,0,0,.12);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background: var(--bg);
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Inter", sans-serif;
+            transition:
+                background .35s ease,
+                color .35s ease;
+        }
+
+        body::selection {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+        }
 
         /* =====================================================
-           NAVBAR
-        ====================================================== */
+           SIDEBAR
+        ===================================================== */
 
-        .glass {
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: 250px;
 
-            background:
-                rgba(25,25,25,0.82);
+            padding: 28px 17px;
 
-            backdrop-filter:
-                blur(16px);
+            display: flex;
+            flex-direction: column;
 
-            -webkit-backdrop-filter:
-                blur(16px);
+            background: rgba(8,8,8,.82);
+            border-right: 1px solid var(--line);
 
-            border-bottom:
-                1px solid var(--border);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
 
+            z-index: 1000;
         }
 
-
-        .navbar {
-
-            box-shadow:
-                0 5px 25px rgba(0,0,0,0.35);
-
+        html.light .sidebar {
+            background: rgba(255,255,255,.82);
         }
-
-
-        /* Logo */
 
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
 
-            filter:
-                drop-shadow(
-                    0 0 8px
-                    rgba(255,255,255,0.35)
-                );
-
-            transition:
-                transform .3s ease,
-                filter .3s ease;
-
+            padding: 6px 10px;
+            margin-bottom: 52px;
         }
 
-        .logo:hover {
-
-            transform:
-                scale(1.06);
-
-            filter:
-                drop-shadow(
-                    0 0 14px
-                    rgba(255,255,255,0.55)
-                );
-
+        .logo img {
+            width: 39px;
+            height: 39px;
+            object-fit: contain;
+            filter: grayscale(1);
         }
 
+        .logo span {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -.7px;
+        }
 
-        /* Navbar links */
+        .logo-dot {
+            color: var(--text);
+        }
 
-        .nav-link {
+        .nav-title {
+            padding: 0 13px;
+            margin-bottom: 10px;
 
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.7px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
             position: relative;
 
-            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            padding: 12px 14px;
+
+            color: var(--muted);
+            border-radius: 12px;
+
+            font-size: 12px;
+            font-weight: 500;
 
             transition:
-                color .25s ease;
-
+                color .25s ease,
+                background .25s ease,
+                transform .25s ease;
         }
 
-        .nav-link:hover {
-
-            color: white;
-
+        .nav-item i {
+            width: 18px;
+            font-size: 16px;
+            text-align: center;
         }
 
-        .nav-link.active {
-
-            color:
-                #facc15;
-
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(255,255,255,.045);
+            transform: translateX(3px);
         }
 
-        .nav-link.active::after {
+        html.light .nav-item:hover {
+            background: rgba(0,0,0,.045);
+        }
 
+        .nav-item.active {
+            color: var(--text);
+            background: rgba(255,255,255,.075);
+        }
+
+        html.light .nav-item.active {
+            background: rgba(0,0,0,.07);
+        }
+
+        .nav-item.active::before {
             content: "";
 
             position: absolute;
-
             left: 0;
-            right: 0;
+            top: 50%;
 
-            bottom: -8px;
-
-            height: 2px;
+            width: 2px;
+            height: 19px;
 
             border-radius: 10px;
+            background: var(--text);
 
-            background:
-                #facc15;
-
-            box-shadow:
-                0 0 10px
-                rgba(250,204,21,.5);
-
+            transform: translateY(-50%);
         }
 
-
-        /* =====================================================
-           PROFILE AVATAR
-        ====================================================== */
-
-        .profile-avatar {
-
-            width: 42px;
-            height: 42px;
-
-            border-radius: 50%;
-
-            object-fit: cover;
-
-            border:
-                2px solid
-                rgba(255,255,255,0.25);
-
-            box-shadow:
-                0 4px 15px
-                rgba(0,0,0,.5);
-
-            transition:
-                all .3s ease;
-
-        }
-
-        .profile-avatar:hover {
-
-            transform:
-                scale(1.07);
-
-            border-color:
-                rgba(13,110,253,.8);
-
-        }
-
-
-        /* Avatar kosong */
-
-        .profile-avatar-placeholder {
-
-            width: 42px;
-            height: 42px;
-
-            border-radius: 50%;
+        .sidebar-bottom {
+            margin-top: auto;
 
             display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
+        /* =====================================================
+           PROFILE
+        ===================================================== */
+
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 9px;
+
+            border-radius: 13px;
+
+            transition: background .25s ease;
+        }
+
+        .profile-link:hover {
+            background: rgba(255,255,255,.045);
+        }
+
+        html.light .profile-link:hover {
+            background: rgba(0,0,0,.045);
+        }
+
+        .profile-avatar,
+        .profile-placeholder {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+
+            border-radius: 50%;
+        }
+
+        .profile-avatar {
+            object-fit: cover;
+            filter: grayscale(1);
+            border: 1px solid var(--line);
+        }
+
+        .profile-placeholder {
+            display: flex;
             align-items: center;
             justify-content: center;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #0d6efd 0%,
-                    #6610f2 50%,
-                    #6f42c1 100%
-                );
+            background: var(--text);
+            color: var(--bg);
 
-            color: white;
+            font-size: 15px;
+        }
 
-            font-size: 21px;
+        .profile-info {
+            min-width: 0;
+        }
 
-            border:
-                2px solid
-                rgba(255,255,255,0.2);
+        .profile-name {
+            overflow: hidden;
 
-            box-shadow:
-                0 4px 15px
-                rgba(0,0,0,.5);
+            font-size: 11px;
+            font-weight: 600;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .profile-label {
+            margin-top: 2px;
+
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        /* =====================================================
+           THEME
+        ===================================================== */
+
+        .theme-toggle {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 11px 13px;
+
+            color: var(--muted);
+            background: rgba(255,255,255,.025);
+
+            border: 1px solid var(--line);
+            border-radius: 12px;
+
+            cursor: pointer;
 
             transition:
-                all .3s ease;
-
+                color .25s ease,
+                background .25s ease,
+                border .25s ease;
         }
 
-        .profile-avatar-placeholder:hover {
-
-            transform:
-                scale(1.07);
-
-            box-shadow:
-                0 5px 20px
-                rgba(13,110,253,.35);
-
+        html.light .theme-toggle {
+            background: rgba(0,0,0,.025);
         }
 
+        .theme-toggle:hover {
+            color: var(--text);
+            background: rgba(255,255,255,.055);
+            border-color: var(--line-hover);
+        }
+
+        html.light .theme-toggle:hover {
+            background: rgba(0,0,0,.055);
+        }
+
+        .theme-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .theme-left i {
+            font-size: 15px;
+        }
+
+        /* =====================================================
+           MOBILE HEADER
+        ===================================================== */
+
+        .mobile-header {
+            display: none;
+
+            position: fixed;
+            inset: 0 0 auto 0;
+
+            height: 64px;
+            padding: 0 16px;
+
+            align-items: center;
+            justify-content: space-between;
+
+            background: rgba(7,7,7,.84);
+            border-bottom: 1px solid var(--line);
+
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+
+            z-index: 999;
+        }
+
+        html.light .mobile-header {
+            background: rgba(255,255,255,.84);
+        }
+
+        .mobile-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            font-family: "Space Grotesk", sans-serif;
+            font-weight: 700;
+        }
+
+        .mobile-logo img {
+            width: 31px;
+            height: 31px;
+            filter: grayscale(1);
+        }
+
+        .mobile-actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .mobile-btn {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--text);
+            background: rgba(255,255,255,.045);
+
+            border: 1px solid var(--line);
+            border-radius: 11px;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+        html.light .mobile-btn {
+            background: rgba(0,0,0,.045);
+        }
+
+        .mobile-btn:hover {
+            border-color: var(--line-hover);
+            transform: translateY(-1px);
+        }
+
+        /* =====================================================
+           MOBILE DRAWER
+        ===================================================== */
+
+        .mobile-drawer {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0,0,0,.68);
+            backdrop-filter: blur(5px);
+
+            z-index: 2000;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition:
+                opacity .3s ease,
+                visibility .3s ease;
+        }
+
+        .mobile-drawer.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-drawer-content {
+            position: absolute;
+            inset: 0 auto 0 0;
+
+            width: 275px;
+            padding: 25px 18px;
+
+            background: var(--surface);
+
+            transform: translateX(-100%);
+
+            transition: transform .35s cubic-bezier(.22,1,.36,1);
+        }
+
+        .mobile-drawer.show .mobile-drawer-content {
+            transform: translateX(0);
+        }
+
+        .mobile-drawer .logo {
+            margin-bottom: 35px;
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            min-height: 100vh;
+            margin-left: 250px;
+            overflow: hidden;
+        }
+
+        .container {
+            width: min(1180px, calc(100% - 70px));
+            margin-inline: auto;
+        }
 
         /* =====================================================
            HERO
-        ====================================================== */
+        ===================================================== */
 
         .hero {
+            min-height: 750px;
 
-            position: relative;
+            padding: 100px 0 70px;
 
-            padding:
-                70px 20px 45px;
-
-            text-align: center;
-
-        }
-
-
-        .hero-badge {
-
-            display:
-                inline-flex;
+            display: grid;
+            grid-template-columns: .88fr 1.12fr;
 
             align-items: center;
-
-            gap: 7px;
-
-            padding:
-                7px 14px;
-
-            border-radius:
-                999px;
-
-            background:
-                rgba(13,110,253,.1);
-
-            border:
-                1px solid
-                rgba(13,110,253,.25);
-
-            color:
-                #60a5fa;
-
-            font-size:
-                12px;
-
-            margin-bottom:
-                18px;
-
+            gap: 70px;
         }
 
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            margin-bottom: 22px;
+            padding: 7px 11px;
+
+            color: var(--text-soft);
+
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.025);
+            border-radius: 100px;
+
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+        }
+
+        html.light .hero-badge {
+            background: rgba(0,0,0,.025);
+        }
+
+        .hero-badge i {
+            color: var(--text);
+            font-size: 11px;
+        }
 
         .hero h1 {
+            max-width: 650px;
 
-            font-size:
-                clamp(
-                    28px,
-                    4vw,
-                    43px
-                );
+            margin: 0;
 
-            font-weight:
-                700;
+            font-family: "Space Grotesk", sans-serif;
 
-            letter-spacing:
-                -1px;
+            font-size: clamp(46px, 5.4vw, 75px);
+            line-height: .98;
 
-            margin-bottom:
-                12px;
+            letter-spacing: -4px;
+            font-weight: 700;
+        }
+
+        .hero h1 span {
+            color: var(--text);
+            position: relative;
+        }
+
+        .hero h1 span::after {
+            content: "";
+
+            position: absolute;
+            left: 2px;
+            right: 0;
+            bottom: -4px;
+
+            height: 1px;
+
+            background: var(--text);
+            opacity: .35;
+        }
+
+        .hero-description {
+            max-width: 500px;
+
+            margin: 27px 0 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+
+            margin-top: 31px;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            padding: 12px 18px;
+
+            border-radius: 11px;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease,
+                background .25s ease,
+                color .25s ease,
+                border .25s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-inverse);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px var(--shadow);
+        }
+
+        .btn-secondary {
+            color: var(--text);
+            background: rgba(255,255,255,.035);
+            border: 1px solid var(--line);
+        }
+
+        html.light .btn-secondary {
+            background: rgba(0,0,0,.035);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,.075);
+            border-color: var(--line-hover);
+            transform: translateY(-3px);
+        }
+
+        html.light .btn-secondary:hover {
+            background: rgba(0,0,0,.075);
+        }
+
+        /* =====================================================
+           HERO GALLERY
+        ===================================================== */
+
+        .hero-gallery {
+            position: relative;
+
+            height: 560px;
+
+            display: grid;
+            grid-template-columns: 1fr 1.18fr 1fr;
+
+            gap: 11px;
+
+            align-items: center;
+        }
+
+        .hero-column {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+
+        .hero-column:nth-child(1) {
+            transform: translateY(27px);
+        }
+
+        .hero-column:nth-child(2) {
+            transform: translateY(-23px);
+        }
+
+        .hero-column:nth-child(3) {
+            transform: translateY(39px);
+        }
+
+        .hero-image {
+            position: relative;
+            overflow: hidden;
+
+            background: var(--surface);
+
+            border: 1px solid var(--line);
+            border-radius: 17px;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,.25);
+        }
+
+        .hero-image::after {
+            content: "";
+
+            position: absolute;
+            inset: 0;
 
             background:
                 linear-gradient(
-                    90deg,
-                    #ffffff,
-                    #b8c8e8
+                    to bottom,
+                    transparent 50%,
+                    rgba(0,0,0,.3)
                 );
 
-            -webkit-background-clip:
-                text;
-
-            -webkit-text-fill-color:
-                transparent;
-
+            pointer-events: none;
         }
 
+        .hero-image img {
+            display: block;
 
-        .hero p {
+            width: 100%;
+            height: auto;
 
-            max-width:
-                620px;
+            object-fit: cover;
 
-            margin:
-                0 auto 28px;
-
-            color:
-                #888;
-
-            font-size:
-                14px;
-
-            line-height:
-                1.7;
-
-        }
-
-
-        /* =====================================================
-           SEARCH
-        ====================================================== */
-
-        .search-wrapper {
-
-            max-width:
-                600px;
-
-            margin:
-                0 auto;
-
-            position:
-                relative;
-
-        }
-
-
-        .search-icon {
-
-            position:
-                absolute;
-
-            left:
-                18px;
-
-            top:
-                50%;
-
-            transform:
-                translateY(-50%);
-
-            color:
-                #777;
-
-            font-size:
-                17px;
-
-            pointer-events:
-                none;
-
-        }
-
-
-        #searchInput {
-
-            width:
-                100%;
-
-            height:
-                54px;
-
-            padding:
-                0 50px;
-
-            border-radius:
-                16px;
-
-            border:
-                1px solid
-                rgba(255,255,255,.08);
-
-            background:
-                rgba(255,255,255,.06);
-
-            color:
-                white;
-
-            outline:
-                none;
-
-            backdrop-filter:
-                blur(10px);
-
-            box-shadow:
-                0 10px 35px
-                rgba(0,0,0,.3);
+            filter: grayscale(100%);
 
             transition:
-                all .3s ease;
-
-        }
-
-
-        #searchInput::placeholder {
-
-            color:
-                #777;
-
-        }
-
-
-        #searchInput:focus {
-
-            border-color:
-                rgba(13,110,253,.7);
-
-            background:
-                rgba(255,255,255,.08);
-
-            box-shadow:
-                0 0 0 4px
-                rgba(13,110,253,.1),
-                0 10px 35px
-                rgba(0,0,0,.35);
-
-        }
-
-
-        .clear-search {
-
-            position:
-                absolute;
-
-            right:
-                15px;
-
-            top:
-                50%;
-
-            transform:
-                translateY(-50%);
-
-            width:
-                28px;
-
-            height:
-                28px;
-
-            border:
-                none;
-
-            border-radius:
-                50%;
-
-            display:
-                none;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            background:
-                rgba(255,255,255,.1);
-
-            color:
-                #aaa;
-
-            cursor:
-                pointer;
-
-        }
-
-
-        .clear-search:hover {
-
-            background:
-                rgba(255,255,255,.18);
-
-            color:
-                white;
-
-        }
-
-
-        /* =====================================================
-           GALLERY CONTAINER
-        ====================================================== */
-
-        .gallery-container {
-
-            max-width:
-                1280px;
-
-            margin:
-                0 auto;
-
-            padding:
-                10px 24px 80px;
-
-        }
-
-
-        /* =====================================================
-           RESULT INFO
-        ====================================================== */
-
-        .gallery-info {
-
-            display:
-                flex;
-
-            justify-content:
-                space-between;
-
-            align-items:
-                center;
-
-            margin-bottom:
-                18px;
-
-            color:
-                #777;
-
-            font-size:
-                12px;
-
-        }
-
-
-        .result-count {
-
-            color:
-                #999;
-
-        }
-
-
-        /* =====================================================
-           GALLERY
-        ====================================================== */
-
-        #gallery {
-
-            column-gap:
-                20px;
-
-        }
-
-
-        /* =====================================================
-           GALLERY CARD
-        ====================================================== */
-
-        .gallery-card {
-
-            display:
-                inline-block;
-
-            width:
-                100%;
-
-            margin-bottom:
-                20px;
-
-            border-radius:
-                20px;
-
-            overflow:
-                hidden;
-
-            position:
-                relative;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(35,35,35,.9),
-                    rgba(20,20,20,.9)
-                );
-
-            border:
-                1px solid
-                rgba(255,255,255,.05);
-
-            box-shadow:
-                0 10px 30px
-                rgba(0,0,0,.3);
-
-            transition:
-                transform .4s ease,
-                box-shadow .4s ease,
-                border-color .4s ease;
-
-            opacity:
-                0;
-
-            transform:
-                translateY(40px);
-
-        }
-
-
-        .gallery-card.show {
-
-            opacity:
-                1;
-
-            transform:
-                translateY(0);
-
-        }
-
-
-        .gallery-card:hover {
-
-            transform:
-                translateY(-7px);
-
-            border-color:
-                rgba(255,255,255,.1);
-
-            box-shadow:
-                0 25px 55px
-                rgba(0,0,0,.55);
-
-        }
-
-
-        /* =====================================================
-           IMAGE
-        ====================================================== */
-
-        .image-wrapper {
-
-            position:
-                relative;
-
-            overflow:
-                hidden;
-
-            border-radius:
-                16px;
-
-        }
-
-
-        .gallery-card img {
-
-            display:
-                block;
-
-            width:
-                100%;
-
-            height:
-                auto;
-
-            object-fit:
-                cover;
-
-            transition:
-                transform .7s ease,
+                transform .8s cubic-bezier(.22,1,.36,1),
                 filter .5s ease;
-
         }
 
-
-        .gallery-card:hover img {
-
-            transform:
-                scale(1.06);
-
-            filter:
-                brightness(.82);
-
+        .hero-image:hover img {
+            transform: scale(1.06);
+            filter: grayscale(75%);
         }
 
+        .hero-image.tall img {
+            aspect-ratio: 4 / 5;
+        }
 
-        /* Image overlay */
+        .hero-image.square img {
+            aspect-ratio: 1 / 1;
+        }
 
-        .image-overlay {
+        /* =====================================================
+           SUBTLE BACKGROUND DETAIL
+        ===================================================== */
 
-            position:
-                absolute;
+        .hero-glow {
+            position: absolute;
 
-            inset:
-                0;
+            width: 420px;
+            height: 420px;
 
-            display:
-                flex;
+            right: 5%;
+            top: 10%;
 
-            align-items:
-                flex-end;
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,.055),
+                    transparent 68%
+                );
 
-            justify-content:
-                space-between;
+            filter: blur(35px);
 
-            padding:
-                14px;
+            pointer-events: none;
+        }
 
-            opacity:
-                0;
+        html.light .hero-glow {
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0,0,0,.055),
+                    transparent 68%
+                );
+        }
+
+        /* =====================================================
+           SECTIONS
+        ===================================================== */
+
+        .section {
+            padding: 90px 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-eyebrow {
+            margin-bottom: 7px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            margin: 0;
+
+            font-family: "Space Grotesk", sans-serif;
+
+            font-size: 29px;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            font-weight: 600;
+        }
+
+        .section-description {
+            max-width: 380px;
+
+            margin: 0 0 10px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            line-height: 1.8;
+            text-align: right;
+        }
+
+        .view-all {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+
+            color: var(--text-soft);
+
+            font-size: 10px;
+            font-weight: 500;
+
+            transition: color .25s ease;
+        }
+
+        .view-all:hover {
+            color: var(--text);
+        }
+
+        /* =====================================================
+           MASONRY
+        ===================================================== */
+
+        .masonry {
+            columns: 4 220px;
+            column-gap: 14px;
+        }
+
+        .art-card {
+            position: relative;
+
+            display: block;
+
+            margin-bottom: 14px;
+
+            overflow: hidden;
+
+            background: var(--surface);
+
+            border: 1px solid var(--line);
+            border-radius: 15px;
+
+            break-inside: avoid;
+
+            cursor: pointer;
+        }
+
+        .art-card img {
+            display: block;
+
+            width: 100%;
+            height: auto;
+
+            filter: grayscale(100%);
+
+            transition:
+                transform .65s cubic-bezier(.22,1,.36,1),
+                filter .5s ease;
+        }
+
+        .art-card:hover img {
+            transform: scale(1.045);
+            filter: grayscale(40%) brightness(.65);
+        }
+
+        .art-overlay {
+            position: absolute;
+            inset: 0;
+
+            padding: 13px;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
 
             background:
                 linear-gradient(
                     to top,
-                    rgba(0,0,0,.65),
+                    rgba(0,0,0,.78),
                     transparent 55%
                 );
 
-            transition:
-                opacity .35s ease;
+            opacity: 0;
 
+            transition: opacity .3s ease;
         }
 
-
-        .gallery-card:hover
-        .image-overlay {
-
-            opacity:
-                1;
-
+        .art-card:hover .art-overlay {
+            opacity: 1;
         }
 
+        .art-name {
+            max-width: 70%;
 
-        .overlay-btn {
+            overflow: hidden;
 
-            width:
-                38px;
+            color: white;
 
-            height:
-                38px;
+            font-size: 10px;
+            font-weight: 600;
 
-            border:
-                none;
-
-            border-radius:
-                50%;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            background:
-                rgba(0,0,0,.55);
-
-            color:
-                white;
-
-            backdrop-filter:
-                blur(8px);
-
-            cursor:
-                pointer;
-
-            transition:
-                all .25s ease;
-
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
+        .art-open {
+            width: 30px;
+            height: 30px;
 
-        .overlay-btn:hover {
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-            background:
-                rgba(255,255,255,.18);
+            color: white;
 
-            transform:
-                scale(1.08);
+            background: rgba(255,255,255,.14);
+            border: 1px solid rgba(255,255,255,.18);
 
+            border-radius: 50%;
+
+            backdrop-filter: blur(8px);
         }
-
 
         /* =====================================================
-           CARD CONTENT
-        ====================================================== */
+           WHY
+        ===================================================== */
 
-        .card-content {
-
-            padding:
-                14px 14px 15px;
-
+        .why-section {
+            padding: 90px 0;
         }
 
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
 
-        .image-title {
-
-            color:
-                #eee;
-
-            font-size:
-                13px;
-
-            font-weight:
-                600;
-
-            margin:
-                0 0 10px;
-
-            white-space:
-                nowrap;
-
-            overflow:
-                hidden;
-
-            text-overflow:
-                ellipsis;
-
+            margin-top: 34px;
         }
 
+        .feature-card {
+            position: relative;
 
-        .card-footer {
+            min-height: 235px;
+            padding: 27px;
 
-            display:
-                flex;
-
-            justify-content:
-                space-between;
-
-            align-items:
-                center;
-
-        }
-
-
-        /* =====================================================
-           LIKE
-        ====================================================== */
-
-        .like-btn {
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            gap:
-                6px;
-
-            border:
-                none;
-
-            background:
-                transparent;
-
-            color:
-                #888;
-
-            cursor:
-                pointer;
-
-            font-size:
-                12px;
-
-            padding:
-                5px 7px;
-
-            border-radius:
-                8px;
-
-            transition:
-                all .25s ease;
-
-        }
-
-
-        .like-btn:hover {
-
-            background:
-                rgba(255,255,255,.05);
-
-            color:
-                #eee;
-
-        }
-
-
-        .like-btn.like-active {
-
-            color:
-                #ff4d6d;
-
-        }
-
-
-        .like-icon {
-
-            font-size:
-                16px;
-
-        }
-
-
-        @keyframes pop {
-
-            0% {
-                transform:
-                    scale(1);
-            }
-
-            50% {
-                transform:
-                    scale(1.4);
-            }
-
-            100% {
-                transform:
-                    scale(1);
-            }
-
-        }
-
-
-        .like-active .like-icon {
-
-            animation:
-                pop .3s ease;
-
-        }
-
-
-        /* =====================================================
-           DOWNLOAD BUTTON
-        ====================================================== */
-
-        .download-btn {
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            gap:
-                6px;
-
-            padding:
-                6px 9px;
-
-            border-radius:
-                8px;
-
-            color:
-                #888;
-
-            font-size:
-                12px;
-
-            text-decoration:
-                none;
-
-            transition:
-                all .25s ease;
-
-        }
-
-
-        .download-btn:hover {
-
-            color:
-                #4ade80;
-
-            background:
-                rgba(74,222,128,.08);
-
-        }
-
-
-        /* =====================================================
-           EMPTY STATE
-        ====================================================== */
-
-        .empty-gallery {
-
-            width:
-                100%;
-
-            min-height:
-                350px;
-
-            display:
-                flex;
-
-            flex-direction:
-                column;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            text-align:
-                center;
-
-            border-radius:
-                20px;
-
-            border:
-                1px solid
-                rgba(255,255,255,.05);
-
-            background:
-                rgba(255,255,255,.025);
-
-        }
-
-
-        .empty-icon {
-
-            width:
-                80px;
-
-            height:
-                80px;
-
-            border-radius:
-                50%;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            margin-bottom:
-                18px;
+            overflow: hidden;
 
             background:
                 linear-gradient(
-                    135deg,
-                    #1d4ed8,
-                    #6d28d9
+                    145deg,
+                    rgba(255,255,255,.035),
+                    rgba(255,255,255,.008)
                 );
 
-            color:
-                white;
+            border: 1px solid var(--line);
+            border-radius: 18px;
 
-            font-size:
-                32px;
-
-            box-shadow:
-                0 10px 30px
-                rgba(37,99,235,.25);
-
+            transition:
+                transform .35s cubic-bezier(.22,1,.36,1),
+                border-color .3s ease,
+                background .3s ease;
         }
 
-
-        .empty-gallery h3 {
-
-            color:
-                #ddd;
-
-            font-size:
-                16px;
-
-            font-weight:
-                600;
-
-            margin-bottom:
-                5px;
-
+        html.light .feature-card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(0,0,0,.018),
+                    rgba(0,0,0,.005)
+                );
         }
 
+        .feature-card::before {
+            content: "";
 
-        .empty-gallery p {
+            position: absolute;
+            width: 150px;
+            height: 150px;
 
-            color:
-                #777;
+            right: -70px;
+            bottom: -70px;
 
-            font-size:
-                13px;
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,.07),
+                    transparent 70%
+                );
 
-            margin:
-                0;
-
+            pointer-events: none;
         }
 
+        html.light .feature-card::before {
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0,0,0,.05),
+                    transparent 70%
+                );
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--line-hover);
+        }
+
+        .feature-icon {
+            width: 43px;
+            height: 43px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 27px;
+
+            color: var(--text);
+
+            background: rgba(255,255,255,.055);
+            border: 1px solid var(--line);
+
+            border-radius: 12px;
+
+            font-size: 18px;
+        }
+
+        html.light .feature-icon {
+            background: rgba(0,0,0,.055);
+        }
+
+        .feature-card h3 {
+            margin: 0 0 8px;
+
+            font-family: "Space Grotesk", sans-serif;
+
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            max-width: 280px;
+
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            line-height: 1.85;
+        }
 
         /* =====================================================
-           NO SEARCH RESULT
-        ====================================================== */
+           CTA
+        ===================================================== */
 
-        #noResult {
+        .cta {
+            position: relative;
 
-            display:
-                none;
+            margin: 25px 0 80px;
+            padding: 75px 40px;
 
-            text-align:
-                center;
+            overflow: hidden;
 
-            padding:
-                80px 20px;
+            text-align: center;
 
-            color:
-                #777;
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--surface-2),
+                    var(--surface)
+                );
 
+            border: 1px solid var(--line);
+            border-radius: 24px;
         }
 
+        .cta::before {
+            content: "";
 
-        #noResult i {
+            position: absolute;
+            width: 500px;
+            height: 500px;
 
-            display:
-                block;
+            left: 50%;
+            top: 50%;
 
-            font-size:
-                45px;
+            transform: translate(-50%, -50%);
 
-            margin-bottom:
-                12px;
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,.045),
+                    transparent 67%
+                );
 
-            color:
-                #555;
-
+            pointer-events: none;
         }
 
+        html.light .cta::before {
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0,0,0,.045),
+                    transparent 67%
+                );
+        }
+
+        .cta > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            max-width: 650px;
+
+            margin: 0 auto;
+
+            font-family: "Space Grotesk", sans-serif;
+
+            font-size: clamp(29px, 4vw, 44px);
+            line-height: 1.03;
+
+            letter-spacing: -2px;
+            font-weight: 600;
+        }
+
+        .cta p {
+            max-width: 490px;
+
+            margin: 16px auto 25px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            line-height: 1.8;
+        }
 
         /* =====================================================
-           MOBILE MENU
-        ====================================================== */
+           FOOTER
+        ===================================================== */
 
-        .mobile-menu {
+        footer {
+            padding: 25px 0 34px;
 
-            display:
-                none;
+            color: var(--muted);
 
+            border-top: 1px solid var(--line);
+
+            font-size: 9px;
         }
 
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-        @media (max-width: 767px) {
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
 
-            .desktop-menu {
+        @media (max-width: 1100px) {
 
-                display:
-                    none !important;
-
+            .sidebar {
+                width: 215px;
             }
 
-            .mobile-menu {
+            .main {
+                margin-left: 215px;
+            }
 
-                display:
-                    flex;
-
+            .container {
+                width: min(92%, 900px);
             }
 
             .hero {
+                grid-template-columns: 1fr;
 
-                padding:
-                    50px 18px 35px;
-
+                padding-top: 90px;
+                gap: 50px;
             }
 
-            .gallery-container {
-
-                padding:
-                    5px 14px 60px;
-
+            .hero-content {
+                text-align: center;
             }
 
-            .gallery-info {
-
-                margin-bottom:
-                    12px;
-
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
             }
 
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-gallery {
+                width: 100%;
+                max-width: 650px;
+                margin: auto;
+            }
+
+            .masonry {
+                columns: 3 180px;
+            }
         }
 
+        @media (max-width: 767px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .main {
+                margin-left: 0;
+                padding-top: 64px;
+            }
+
+            .container {
+                width: calc(100% - 30px);
+            }
+
+            .hero {
+                min-height: auto;
+
+                padding:
+                    65px 0
+                    45px;
+
+                gap: 42px;
+            }
+
+            .hero-badge {
+                font-size: 8px;
+            }
+
+            .hero h1 {
+                font-size: 45px;
+                letter-spacing: -2.7px;
+            }
+
+            .hero-description {
+                font-size: 11px;
+                line-height: 1.85;
+            }
+
+            .hero-gallery {
+                height: 400px;
+                gap: 7px;
+            }
+
+            .hero-column {
+                gap: 7px;
+            }
+
+            .hero-image {
+                border-radius: 11px;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .section-header {
+                display: block;
+            }
+
+            .section-title {
+                font-size: 26px;
+            }
+
+            .section-description {
+                margin-top: 9px;
+                text-align: left;
+            }
+
+            .view-all {
+                justify-content: flex-start;
+                margin-top: 14px;
+            }
+
+            .masonry {
+                columns: 2 135px;
+                column-gap: 9px;
+            }
+
+            .art-card {
+                margin-bottom: 9px;
+                border-radius: 11px;
+            }
+
+            .art-overlay {
+                opacity: 1;
+                padding: 9px;
+            }
+
+            .art-name {
+                font-size: 9px;
+            }
+
+            .art-open {
+                width: 27px;
+                height: 27px;
+                font-size: 10px;
+            }
+
+            .why-section {
+                padding: 60px 0;
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr;
+                gap: 9px;
+            }
+
+            .feature-card {
+                min-height: auto;
+                padding: 24px;
+            }
+
+            .feature-icon {
+                margin-bottom: 20px;
+            }
+
+            .cta {
+                margin:
+                    15px 0
+                    45px;
+
+                padding: 52px 20px;
+
+                border-radius: 19px;
+            }
+
+            .cta h2 {
+                font-size: 31px;
+                letter-spacing: -1.5px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 7px;
+
+                text-align: center;
+            }
+        }
 
         /* =====================================================
-           TAILWIND COLUMN RESPONSIVE
-        ====================================================== */
+           REDUCED MOTION
+        ===================================================== */
 
-        @media (min-width: 640px) {
-
-            #gallery {
-
-                column-count:
-                    2;
-
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+                animation: none !important;
             }
-
         }
-
-
-        @media (min-width: 768px) {
-
-            #gallery {
-
-                column-count:
-                    3;
-
-            }
-
-        }
-
-
-        @media (min-width: 1024px) {
-
-            #gallery {
-
-                column-count:
-                    4;
-
-            }
-
-        }
-
-
     </style>
-
 </head>
-
 
 <body>
 
-
 @php
+    $profile = optional(auth()->user()->profile);
+    $avatar = $profile->avatar ?? null;
+    $hasAvatar = !empty($avatar);
 
-    /*
-    |--------------------------------------------------------------------------
-    | PROFILE
-    |--------------------------------------------------------------------------
-    */
-
-    $profile =
-        optional(auth()->user()->profile);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Avatar
-    |--------------------------------------------------------------------------
-    |
-    | Kalau avatar kosong/null:
-    | gunakan placeholder gradient.
-    |
-    */
-
-    $avatar =
-        $profile->avatar ?? null;
-
-    $hasAvatar =
-        !empty($avatar);
-
+    $galleryImages = collect($images ?? [])->take(12);
 @endphp
 
 
-
 <!-- =========================================================
-     NAVBAR
+     DESKTOP SIDEBAR
 ========================================================= -->
 
-<nav
-    class="navbar glass sticky top-0 z-50"
->
+<aside class="sidebar">
 
-    <div
-        class="max-w-7xl mx-auto px-5 md:px-8 py-3 w-full"
-    >
+    <a href="{{ route('dashboard') }}" class="logo">
 
-        <div
-            class="flex justify-between items-center"
+        <img
+            src="{{ asset('logo/logo.png') }}"
+            alt="GallSpace"
         >
 
+        <span>
+            Gall<span class="logo-dot">Space</span>
+        </span>
 
-            <!-- LOGO -->
+    </a>
+
+
+    <div class="nav-title">
+        Navigation
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+        <a
+            href="{{ route('dashboard') }}"
+            class="nav-item active"
+        >
+            <i class="bi bi-house-fill"></i>
+            <span>Home</span>
+        </a>
+
+
+        <a
+            href="/jelajah"
+            class="nav-item"
+        >
+            <i class="bi bi-compass"></i>
+            <span>Explore</span>
+        </a>
+
+
+        <a
+            href="/upload"
+            class="nav-item"
+        >
+            <i class="bi bi-plus-square"></i>
+            <span>Upload Artwork</span>
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        @auth
 
             <a
-                href="{{ route('dashboard') }}"
-                class="flex items-center gap-3"
+                href="{{ route('akun') }}"
+                class="profile-link"
             >
 
-                <img
-                    src="{{ asset('logo/logo.png') }}"
-                    class="logo w-11 h-11 md:w-12 md:h-12 object-contain"
-                    alt="GallSpace"
-                >
+                @if($hasAvatar)
 
-                <span
-                    class="hidden sm:block font-bold text-lg"
-                >
-                    GallSpace
-                </span>
-
-            </a>
-
-
-
-            <!-- DESKTOP MENU -->
-
-            <div
-                class="desktop-menu flex items-center gap-8 text-sm font-medium"
-            >
-
-                <a
-                    href="{{ route('dashboard') }}"
-                    class="nav-link"
-                >
-                    Home
-                </a>
-
-
-                <a
-                    href="/jelajah"
-                    class="nav-link active"
-                >
-                    Explore
-                </a>
-
-
-                <a
-                    href="/upload"
-                    class="nav-link"
-                >
-                    Upload
-                </a>
-
-            </div>
-
-
-
-            <!-- RIGHT -->
-
-            <div
-                class="flex items-center gap-3"
-            >
-
-                @auth
-
-                    <a
-                        href="{{ route('akun') }}"
-                        title="Akun Saya"
+                    <img
+                        src="{{ asset('profile/'.$avatar) }}"
+                        class="profile-avatar"
+                        alt="Profile"
                     >
-
-                        @if($hasAvatar)
-
-                            <!-- FOTO PROFILE -->
-
-                            <img
-                                src="{{ asset('profile/'.$avatar) }}"
-                                class="profile-avatar"
-                                alt="Profile {{ auth()->user()->name }}"
-                            >
-
-                        @else
-
-                            <!-- PROFILE KOSONG -->
-
-                            <div
-                                class="profile-avatar-placeholder"
-                                title="Belum ada foto profil"
-                            >
-
-                                <i
-                                    class="bi bi-person-fill"
-                                ></i>
-
-                            </div>
-
-                        @endif
-
-                    </a>
 
                 @else
 
-                    <a
-                        href="{{ route('login') }}"
-                        class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition font-semibold text-sm"
-                    >
+                    <div class="profile-placeholder">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
 
-                        Login
-
-                    </a>
-
-                @endauth
+                @endif
 
 
-                <!-- MOBILE MENU BUTTON -->
+                <div class="profile-info">
 
-                <button
-                    id="mobileMenuButton"
-                    class="mobile-menu w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 items-center justify-center"
-                >
+                    <div class="profile-name">
+                        {{ auth()->user()->name }}
+                    </div>
 
-                    <i
-                        class="bi bi-list text-xl"
-                    ></i>
+                    <div class="profile-label">
+                        My Profile
+                    </div>
 
-                </button>
+                </div>
 
-            </div>
+            </a>
 
-        </div>
-
-
-
-        <!-- MOBILE MENU -->
-
-        <div
-            id="mobileMenu"
-            class="hidden pt-4 pb-2"
-        >
-
-            <div
-                class="flex flex-col gap-2"
-            >
-
-                <a
-                    href="{{ route('dashboard') }}"
-                    class="px-4 py-3 rounded-xl hover:bg-white/5"
-                >
-                    Home
-                </a>
-
-
-                <a
-                    href="/jelajah"
-                    class="px-4 py-3 rounded-xl bg-yellow-400/10 text-yellow-400"
-                >
-                    Explore
-                </a>
-
-
-                <a
-                    href="/upload"
-                    class="px-4 py-3 rounded-xl hover:bg-white/5"
-                >
-                    Upload
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</nav>
-
-
-
-<!-- =========================================================
-     HERO
-========================================================= -->
-
-<section
-    class="hero"
->
-
-
-    <div
-        class="hero-badge"
-    >
-
-        <i
-            class="bi bi-stars"
-        ></i>
-
-        GallSpace Explore
-
-    </div>
-
-
-    <h1>
-        Discover Amazing Artwork
-    </h1>
-
-
-    <p>
-        Jelajahi berbagai karya seni, foto, dan gambar
-        menarik dari komunitas GallSpace.
-    </p>
-
-
-    <!-- SEARCH -->
-
-    <div
-        class="search-wrapper"
-    >
-
-        <i
-            class="bi bi-search search-icon"
-        ></i>
-
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Cari gambar atau artwork..."
-            autocomplete="off"
-        >
+        @endauth
 
 
         <button
             type="button"
-            id="clearSearch"
-            class="clear-search"
+            class="theme-toggle"
+            id="themeToggle"
         >
 
-            <i
-                class="bi bi-x"
-            ></i>
+            <div class="theme-left">
+
+                <i
+                    id="themeIcon"
+                    class="bi bi-moon-stars"
+                ></i>
+
+                <span id="themeText">
+                    Dark Mode
+                </span>
+
+            </div>
+
+            <i class="bi bi-chevron-right"></i>
 
         </button>
 
     </div>
 
-</section>
-
+</aside>
 
 
 <!-- =========================================================
-     GALLERY
+     MOBILE HEADER
 ========================================================= -->
 
-<main
-    class="gallery-container"
->
+<header class="mobile-header">
 
-
-    <!-- INFO -->
-
-    <div
-        class="gallery-info"
+    <a
+        href="{{ route('dashboard') }}"
+        class="mobile-logo"
     >
 
-        <span>
-            <i
-                class="bi bi-grid-3x3-gap me-1"
-            ></i>
-
-            Explore Gallery
-        </span>
-
-
-        <span
-            id="resultCount"
-            class="result-count"
+        <img
+            src="{{ asset('logo/logo.png') }}"
+            alt="GallSpace"
         >
 
-            {{ count($images) }} gambar
-
+        <span>
+            Gall<span class="logo-dot">Space</span>
         </span>
+
+    </a>
+
+
+    <div class="mobile-actions">
+
+        <button
+            type="button"
+            class="mobile-btn"
+            id="mobileTheme"
+            aria-label="Toggle theme"
+        >
+            <i class="bi bi-moon-stars"></i>
+        </button>
+
+
+        <button
+            type="button"
+            class="mobile-btn"
+            id="mobileMenu"
+            aria-label="Open menu"
+        >
+            <i class="bi bi-list"></i>
+        </button>
 
     </div>
 
+</header>
 
 
-    <!-- =====================================================
-         GALLERY
-    ====================================================== -->
+<!-- =========================================================
+     MOBILE DRAWER
+========================================================= -->
 
-    @if(count($images) > 0)
+<div
+    class="mobile-drawer"
+    id="mobileDrawer"
+>
 
-        <div
-            id="gallery"
+    <div class="mobile-drawer-content">
+
+        <a
+            href="{{ route('dashboard') }}"
+            class="logo"
         >
 
-            @foreach($images as $img)
+            <img
+                src="{{ asset('logo/logo.png') }}"
+                alt="GallSpace"
+            >
 
-                @php
+            <span>
+                Gall<span class="logo-dot">Space</span>
+            </span>
 
-                    $filename =
-                        basename($img);
-
-                    $cleanName =
-                        strtolower(
-                            pathinfo(
-                                $filename,
-                                PATHINFO_FILENAME
-                            )
-                        );
-
-                @endphp
+        </a>
 
 
-                <!-- GALLERY CARD -->
+        <nav class="sidebar-nav">
+
+            <a
+                href="{{ route('dashboard') }}"
+                class="nav-item active"
+            >
+                <i class="bi bi-house-fill"></i>
+                Home
+            </a>
+
+
+            <a
+                href="/jelajah"
+                class="nav-item"
+            >
+                <i class="bi bi-compass"></i>
+                Explore
+            </a>
+
+
+            <a
+                href="/upload"
+                class="nav-item"
+            >
+                <i class="bi bi-plus-square"></i>
+                Upload Artwork
+            </a>
+
+
+            @auth
+
+                <a
+                    href="{{ route('akun') }}"
+                    class="nav-item"
+                >
+                    <i class="bi bi-person"></i>
+                    Profile
+                </a>
+
+            @endauth
+
+        </nav>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="hero container">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                <i class="bi bi-stars"></i>
+                GALLSPACE COMMUNITY
+            </div>
+
+
+            <h1>
+                Your space for
+                <span>creativity.</span>
+            </h1>
+
+
+            <p class="hero-description">
+                Temukan karya seni yang menginspirasi,
+                bagikan karya terbaikmu, dan terhubung
+                dengan komunitas kreatif di GallSpace.
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <a
+                    href="/jelajah"
+                    class="btn-primary"
+                >
+                    Explore Gallery
+                    <i class="bi bi-arrow-up-right"></i>
+                </a>
+
+
+                <a
+                    href="/upload"
+                    class="btn-secondary"
+                >
+                    <i class="bi bi-plus-lg"></i>
+                    Upload Artwork
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- HERO COLLAGE -->
+
+        <div class="hero-gallery">
+
+            <div class="hero-glow"></div>
+
+            @php
+                $heroImages = $galleryImages->take(6);
+            @endphp
+
+
+            @if($heroImages->count() > 0)
+
+                <div class="hero-column">
+
+                    @if(isset($heroImages[0]))
+
+                        <div class="hero-image tall">
+
+                            <img
+                                src="{{ $heroImages[0] }}"
+                                alt="Artwork"
+                            >
+
+                        </div>
+
+                    @endif
+
+
+                    @if(isset($heroImages[1]))
+
+                        <div class="hero-image square">
+
+                            <img
+                                src="{{ $heroImages[1] }}"
+                                alt="Artwork"
+                            >
+
+                        </div>
+
+                    @endif
+
+                </div>
+
+
+                <div class="hero-column">
+
+                    @if(isset($heroImages[2]))
+
+                        <div class="hero-image square">
+
+                            <img
+                                src="{{ $heroImages[2] }}"
+                                alt="Artwork"
+                            >
+
+                        </div>
+
+                    @endif
+
+
+                    @if(isset($heroImages[3]))
+
+                        <div class="hero-image tall">
+
+                            <img
+                                src="{{ $heroImages[3] }}"
+                                alt="Artwork"
+                            >
+
+                        </div>
+
+                    @endif
+
+                </div>
+
+
+                <div class="hero-column">
+
+                    @if(isset($heroImages[4]))
+
+                        <div class="hero-image tall">
+
+                            <img
+                                src="{{ $heroImages[4] }}"
+                                alt="Artwork"
+                            >
+
+                        </div>
+
+                    @endif
+
+
+                    @if(isset($heroImages[5]))
+
+                        <div class="hero-image square">
+
+                            <img
+                                src="{{ $heroImages[5] }}"
+                                alt="Artwork"
+                            >
+
+                        </div>
+
+                    @endif
+
+                </div>
+
+            @else
 
                 <div
-                    class="gallery-card"
-                    data-name="{{ $cleanName }}"
+                    style="
+                        grid-column:1/-1;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        color:var(--muted);
+                        text-align:center;
+                    "
                 >
 
+                    <div>
 
-                    <!-- IMAGE -->
+                        <i
+                            class="bi bi-images"
+                            style="
+                                font-size:50px;
+                                display:block;
+                                margin-bottom:10px;
+                            "
+                        ></i>
 
-                    <div
-                        class="image-wrapper"
-                    >
-
-                        <img
-                            src="{{ $img }}"
-                            alt="{{ ucfirst($cleanName) }}"
-                            loading="lazy"
-                        >
-
-
-                        <!-- IMAGE OVERLAY -->
-
-                        <div
-                            class="image-overlay"
-                        >
-
-                            <button
-                                type="button"
-                                class="overlay-btn"
-                                onclick="toggleLike(this)"
-                            >
-
-                                <i
-                                    class="bi bi-heart-fill"
-                                ></i>
-
-                            </button>
-
-
-                            <a
-                                href="{{ $img }}"
-                                download
-                                class="overlay-btn"
-                                title="Download"
-                            >
-
-                                <i
-                                    class="bi bi-download"
-                                ></i>
-
-                            </a>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- CONTENT -->
-
-                    <div
-                        class="card-content"
-                    >
-
-                        <h3
-                            class="image-title"
-                            title="{{ ucfirst($cleanName) }}"
-                        >
-
-                            {{ ucfirst($cleanName) }}
-
-                        </h3>
-
-
-                        <div
-                            class="card-footer"
-                        >
-
-
-                            <!-- LIKE -->
-
-                            <button
-                                type="button"
-                                class="like-btn"
-                                onclick="toggleLike(this)"
-                            >
-
-                                <i
-                                    class="bi bi-heart-fill like-icon"
-                                ></i>
-
-                                <span
-                                    class="like-count"
-                                >
-                                    0
-                                </span>
-
-                            </button>
-
-
-
-                            <!-- DOWNLOAD -->
-
-                            <a
-                                href="{{ $img }}"
-                                download
-                                class="download-btn"
-                            >
-
-                                <i
-                                    class="bi bi-download"
-                                ></i>
-
-                                Download
-
-                            </a>
-
-                        </div>
+                        Belum ada artwork.
 
                     </div>
 
                 </div>
 
-            @endforeach
+            @endif
 
         </div>
 
+    </section>
 
 
-        <!-- NO SEARCH RESULT -->
+    <!-- =====================================================
+         FEATURED ARTWORK
+    ====================================================== -->
 
-        <div
-            id="noResult"
-        >
+    @if($galleryImages->count() > 0)
 
-            <i
-                class="bi bi-search"
-            ></i>
+        <section class="section">
 
-            <h3
-                class="text-gray-300 font-semibold mb-1"
-            >
-                Gambar tidak ditemukan
-            </h3>
+            <div class="container">
 
-            <p>
-                Coba gunakan kata kunci yang berbeda.
-            </p>
+                <div class="section-header">
 
-        </div>
+                    <div>
 
+                        <div class="section-eyebrow">
+                            Discover
+                        </div>
 
-    @else
+                        <h2 class="section-title">
+                            Something inspiring.
+                        </h2>
+
+                    </div>
 
 
-        <!-- =================================================
-             EMPTY GALLERY
-        ================================================== -->
+                    <div>
 
-        <div
-            class="empty-gallery"
-        >
+                        <p class="section-description">
+                            Jelajahi beberapa karya terbaru
+                            dari komunitas GallSpace.
+                        </p>
 
-            <div
-                class="empty-icon"
-            >
 
-                <i
-                    class="bi bi-images"
-                ></i>
+                        <a
+                            href="/jelajah"
+                            class="view-all"
+                        >
+                            View all artwork
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="masonry">
+
+                    @foreach($galleryImages as $img)
+
+                        @php
+                            $filename = basename($img);
+
+                            $cleanName = pathinfo(
+                                $filename,
+                                PATHINFO_FILENAME
+                            );
+                        @endphp
+
+
+                        <a
+                            href="/jelajah"
+                            class="art-card"
+                        >
+
+                            <img
+                                src="{{ $img }}"
+                                alt="{{ ucfirst($cleanName) }}"
+                                loading="lazy"
+                            >
+
+
+                            <div class="art-overlay">
+
+                                <span class="art-name">
+                                    {{ ucfirst($cleanName) }}
+                                </span>
+
+
+                                <span class="art-open">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    @endforeach
+
+                </div>
 
             </div>
 
-
-            <h3>
-                Belum ada gambar
-            </h3>
-
-
-            <p>
-                Belum ada artwork yang tersedia di GallSpace.
-            </p>
-
-        </div>
+        </section>
 
     @endif
 
 
+    <!-- =====================================================
+         WHY GALLSPACE
+    ====================================================== -->
+
+    <section class="why-section">
+
+        <div class="container">
+
+            <div class="section-eyebrow">
+                Why GallSpace?
+            </div>
+
+
+            <h2 class="section-title">
+                Made for people who love creating.
+            </h2>
+
+
+            <div class="why-grid">
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-compass"></i>
+                    </div>
+
+
+                    <h3>
+                        Discover
+                    </h3>
+
+
+                    <p>
+                        Temukan berbagai artwork,
+                        fotografi, ilustrasi, dan karya
+                        kreatif dari komunitas GallSpace.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                    </div>
+
+
+                    <h3>
+                        Share
+                    </h3>
+
+
+                    <p>
+                        Upload karya terbaikmu dan
+                        biarkan orang lain menemukan
+                        kreativitas yang kamu miliki.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-heart"></i>
+                    </div>
+
+
+                    <h3>
+                        Connect
+                    </h3>
+
+
+                    <p>
+                        Berikan apresiasi melalui like,
+                        komentar, dan jadilah bagian
+                        dari komunitas kreatif.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CTA
+    ====================================================== -->
+
+    <section class="container">
+
+        <div class="cta">
+
+            <div class="section-eyebrow">
+                Start Creating
+            </div>
+
+
+            <h2>
+                Have something beautiful
+                to share?
+            </h2>
+
+
+            <p>
+                Upload artwork pertamamu dan
+                biarkan komunitas GallSpace
+                melihat karya kamu.
+            </p>
+
+
+            <a
+                href="/upload"
+                class="btn-primary"
+            >
+                Upload Your Artwork
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <div class="container footer-inner">
+
+            <span>
+                © {{ date('Y') }} GallSpace
+            </span>
+
+
+            <span>
+                Your space for creativity.
+            </span>
+
+        </div>
+
+    </footer>
+
 </main>
 
 
-
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
-
 <script>
 
+    /* =====================================================
+       THEME
+    ===================================================== */
 
-    /* ========================================================
-       PAGE FADE IN
-    ======================================================== */
+    const html = document.documentElement;
 
-    window.addEventListener(
-        "load",
-        () => {
+    const themeToggle =
+        document.getElementById("themeToggle");
 
-            document.body.style.opacity =
-                "1";
+    const themeIcon =
+        document.getElementById("themeIcon");
 
-        }
-    );
+    const themeText =
+        document.getElementById("themeText");
 
-
-
-    /* ========================================================
-       SCROLL REVEAL
-    ======================================================== */
-
-    const observer =
-        new IntersectionObserver(
-            entries => {
-
-                entries.forEach(
-                    entry => {
-
-                        if (
-                            entry.isIntersecting
-                        ) {
-
-                            entry.target
-                                .classList
-                                .add("show");
-
-                        }
-
-                    }
-                );
-
-            },
-            {
-                threshold:
-                    0.08
-            }
-        );
+    const mobileTheme =
+        document.getElementById("mobileTheme");
 
 
-    document
-        .querySelectorAll(".gallery-card")
-        .forEach(
-            card => {
+    function updateThemeUI() {
 
-                observer.observe(card);
-
-            }
-        );
+        const isLight =
+            html.classList.contains("light");
 
 
+        if (themeIcon) {
 
-    /* ========================================================
-       SEARCH
-    ======================================================== */
-
-    const searchInput =
-        document.getElementById(
-            "searchInput"
-        );
-
-    const clearSearch =
-        document.getElementById(
-            "clearSearch"
-        );
-
-    const noResult =
-        document.getElementById(
-            "noResult"
-        );
-
-    const resultCount =
-        document.getElementById(
-            "resultCount"
-        );
-
-    const cards =
-        document.querySelectorAll(
-            ".gallery-card"
-        );
-
-
-    searchInput.addEventListener(
-        "input",
-        function () {
-
-            const value =
-                this.value
-                    .toLowerCase()
-                    .trim();
-
-
-            let visible =
-                0;
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Clear button
-            |--------------------------------------------------------------------------
-            */
-
-            clearSearch.style.display =
-                value.length > 0
-                    ? "flex"
-                    : "none";
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Filter
-            |--------------------------------------------------------------------------
-            */
-
-            cards.forEach(
-                card => {
-
-                    const name =
-                        card.dataset.name
-                            .toLowerCase();
-
-
-                    if (
-                        name.includes(value)
-                    ) {
-
-                        card.style.display =
-                            "inline-block";
-
-                        visible++;
-
-                    } else {
-
-                        card.style.display =
-                            "none";
-
-                    }
-
-                }
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Result count
-            |--------------------------------------------------------------------------
-            */
-
-            resultCount.innerText =
-                visible +
-                " gambar";
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | No result
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                visible === 0 &&
-                cards.length > 0
-            ) {
-
-                noResult.style.display =
-                    "block";
-
-            } else {
-
-                noResult.style.display =
-                    "none";
-
-            }
+            themeIcon.className =
+                isLight
+                    ? "bi bi-sun"
+                    : "bi bi-moon-stars";
 
         }
-    );
 
 
+        if (themeText) {
 
-    /* ========================================================
-       CLEAR SEARCH
-    ======================================================== */
-
-    clearSearch.addEventListener(
-        "click",
-        () => {
-
-            searchInput.value =
-                "";
-
-            searchInput.dispatchEvent(
-                new Event("input")
-            );
-
-            searchInput.focus();
-
-        }
-    );
-
-
-
-    /* ========================================================
-       LIKE
-    ======================================================== */
-
-    function toggleLike(button) {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Kalau yang diklik adalah tombol overlay
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            button.classList.contains(
-                "overlay-btn"
-            )
-        ) {
-
-            button.classList.toggle(
-                "liked"
-            );
-
-            return;
+            themeText.innerText =
+                isLight
+                    ? "Light Mode"
+                    : "Dark Mode";
 
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Tombol like di footer
-        |--------------------------------------------------------------------------
-        */
+        if (mobileTheme) {
 
-        const countSpan =
-            button.querySelector(
-                ".like-count"
-            );
+            mobileTheme.innerHTML =
+                isLight
+                    ? '<i class="bi bi-sun"></i>'
+                    : '<i class="bi bi-moon-stars"></i>';
 
-        const icon =
-            button.querySelector(
-                ".like-icon"
-            );
+        }
+
+    }
 
 
-        let count =
-            parseInt(
-                countSpan.innerText
-            ) || 0;
+    function setTheme(theme) {
 
+        if (theme === "light") {
 
-        const active =
-            button.classList.contains(
-                "like-active"
-            );
-
-
-        if (!active) {
-
-            button.classList.add(
-                "like-active"
-            );
-
-            count++;
-
-            icon.className =
-                "bi bi-heart-fill like-icon";
+            html.classList.add("light");
 
         } else {
 
-            button.classList.remove(
-                "like-active"
-            );
-
-            count--;
-
-            icon.className =
-                "bi bi-heart like-icon";
+            html.classList.remove("light");
 
         }
 
 
-        countSpan.innerText =
-            count;
+        localStorage.setItem(
+            "gallspace-theme",
+            theme
+        );
+
+        updateThemeUI();
 
     }
 
 
+    function toggleTheme() {
 
-    /* ========================================================
-       MOBILE MENU
-    ======================================================== */
+        const isLight =
+            html.classList.contains("light");
 
-    const mobileMenuButton =
-        document.getElementById(
-            "mobileMenuButton"
+        setTheme(
+            isLight
+                ? "dark"
+                : "light"
         );
 
-    const mobileMenu =
-        document.getElementById(
-            "mobileMenu"
+    }
+
+
+    const savedTheme =
+        localStorage.getItem(
+            "gallspace-theme"
         );
 
 
-    if (
-        mobileMenuButton &&
-        mobileMenu
+    if (savedTheme) {
+
+        setTheme(savedTheme);
+
+    } else if (
+        window.matchMedia &&
+        window.matchMedia(
+            "(prefers-color-scheme: light)"
+        ).matches
     ) {
 
-        mobileMenuButton.addEventListener(
+        setTheme("light");
+
+    } else {
+
+        setTheme("dark");
+
+    }
+
+
+    if (themeToggle) {
+
+        themeToggle.addEventListener(
+            "click",
+            toggleTheme
+        );
+
+    }
+
+
+    if (mobileTheme) {
+
+        mobileTheme.addEventListener(
+            "click",
+            toggleTheme
+        );
+
+    }
+
+
+    /* =====================================================
+       MOBILE MENU
+    ===================================================== */
+
+    const mobileMenu =
+        document.getElementById("mobileMenu");
+
+    const mobileDrawer =
+        document.getElementById("mobileDrawer");
+
+
+    function closeMobileDrawer() {
+
+        if (mobileDrawer) {
+
+            mobileDrawer.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    if (mobileMenu && mobileDrawer) {
+
+        mobileMenu.addEventListener(
             "click",
             () => {
 
-                mobileMenu
-                    .classList
-                    .toggle("hidden");
+                mobileDrawer.classList.add(
+                    "show"
+                );
 
             }
         );
 
+
+        mobileDrawer.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target === mobileDrawer
+                ) {
+
+                    closeMobileDrawer();
+
+                }
+
+            }
+        );
+
+
+        mobileDrawer
+            .querySelectorAll("a")
+            .forEach(link => {
+
+                link.addEventListener(
+                    "click",
+                    closeMobileDrawer
+                );
+
+            });
+
     }
 
 
+    /* =====================================================
+       ESCAPE
+    ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeMobileDrawer();
+
+            }
+
+        }
+    );
+
 </script>
 
-
 </body>
-
 </html>

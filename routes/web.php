@@ -7,122 +7,64 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 
 
-// =====================================================
-// AUTH ROUTES (PUBLIC)
-// =====================================================
+/*
+|--------------------------------------------------------------------------
+| LANDING PAGE
+|--------------------------------------------------------------------------
+*/
 
-// Halaman utama auth / login / register
+// Halaman utama
 Route::get('/', function () {
-    return view('auth.auth');
-})->name('auth');
+    return view('landing.landing');
+})->name('landing.landing');
 
-// Halaman auth
+
+/*
+|--------------------------------------------------------------------------
+| AUTH
+|--------------------------------------------------------------------------
+*/
+
+// Halaman login / register
 Route::get('/auth', [AuthController::class, 'showAuth'])
     ->name('auth');
 
-// Login
+// Proses login
 Route::post('/login', [AuthController::class, 'login'])
     ->name('login');
 
-// Register
+// Proses register
 Route::post('/register', [AuthController::class, 'register'])
     ->name('register');
 
 // Logout
 Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
     ->name('logout');
 
 
-// =====================================================
-// ROUTES KHUSUS USER LOGIN
-// =====================================================
+/*
+|--------------------------------------------------------------------------
+| PUBLIC GALLERY
+|--------------------------------------------------------------------------
+*/
 
-Route::middleware('auth')->group(function () {
-
-    // =================================================
-    // DASHBOARD
-    // =================================================
-
-    Route::get('/dashboard', function () {
-
-        $path = public_path('images');
-        $images = [];
-
-        if (File::exists($path)) {
-
-            $files = File::files($path);
-
-            foreach ($files as $file) {
-                $images[] = asset(
-                    'images/' . $file->getFilename()
-                );
-            }
-        }
-
-        // View:
-        // resources/views/dashboard/dashboard.blade.php
-        return view('dashboard.dashboard', compact('images'));
-
-    })->name('dashboard');
-
-
-    // =================================================
-    // UPLOAD GALERI
-    // =================================================
-
-    // Menampilkan halaman upload
-    Route::get('/upload', [GalleryController::class, 'create'])
-        ->name('gallery.create');
-
-    // Proses upload
-    Route::post('/upload', [GalleryController::class, 'store'])
-        ->name('gallery.store');
-
-
-    // =================================================
-    // HAPUS GAMBAR GALERI
-    // =================================================
-
-    Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])
-        ->name('gallery.destroy');
-
-
-    // =================================================
-    // PROFILE / AKUN
-    // =================================================
-
-    // Halaman akun
-    Route::get('/akun', [ProfileController::class, 'index'])
-        ->name('akun');
-
-    // Halaman edit akun
-    Route::get('/akun/edit', [ProfileController::class, 'edit'])
-        ->name('akun.edit');
-
-    // Proses update akun
-    Route::post('/akun/update', [ProfileController::class, 'update'])
-        ->name('akun.update');
-});
-
-
-// =====================================================
-// GALERI PUBLIK
-// =====================================================
-
-// Tidak perlu login
+// Galeri yang bisa dilihat tanpa login
 Route::get('/gallery', [GalleryController::class, 'index'])
     ->name('gallery.index');
 
 
-// =====================================================
-// JELAJAH
-// =====================================================
+/*
+|--------------------------------------------------------------------------
+| JELAJAH
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/jelajah', function () {
 
-    // =================================================
+    // ==============================
     // EXPLORE
-    // =================================================
+    // ==============================
 
     $explorePath = public_path('explore');
     $exploreImages = [];
@@ -138,9 +80,9 @@ Route::get('/jelajah', function () {
     }
 
 
-    // =================================================
+    // ==============================
     // TRENDING
-    // =================================================
+    // ==============================
 
     $trendingPath = public_path('trending');
     $trendingImages = [];
@@ -156,9 +98,9 @@ Route::get('/jelajah', function () {
     }
 
 
-    // =================================================
+    // ==============================
     // CATEGORIES
-    // =================================================
+    // ==============================
 
     $categories = [
         'photography',
@@ -169,10 +111,6 @@ Route::get('/jelajah', function () {
         'memes'
     ];
 
-
-    // =================================================
-    // VIEW
-    // =================================================
 
     return view(
         'jelajah.jelajah',
@@ -186,21 +124,24 @@ Route::get('/jelajah', function () {
 })->name('jelajah');
 
 
-// =====================================================
-// JELAJAH - ANIME
-// =====================================================
+/*
+|--------------------------------------------------------------------------
+| JELAJAH - ANIME
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/jelajah/anime', function () {
 
-    $animePath = public_path('anime');
+    $folder = 'anime';
+    $path = public_path($folder);
     $images = [];
 
-    if (File::exists($animePath)) {
+    if (File::exists($path)) {
 
-        foreach (File::files($animePath) as $file) {
+        foreach (File::files($path) as $file) {
 
             $images[] = asset(
-                'anime/' . $file->getFilename()
+                $folder . '/' . $file->getFilename()
             );
         }
     }
@@ -213,9 +154,11 @@ Route::get('/jelajah/anime', function () {
 })->name('jelajah.anime');
 
 
-// =====================================================
-// JELAJAH - PHOTOGRAPHY
-// =====================================================
+/*
+|--------------------------------------------------------------------------
+| JELAJAH - PHOTOGRAPHY
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/jelajah/photography', function () {
 
@@ -241,13 +184,16 @@ Route::get('/jelajah/photography', function () {
 })->name('jelajah.photography');
 
 
-// =====================================================
-// JELAJAH - ART
-// =====================================================
+/*
+|--------------------------------------------------------------------------
+| JELAJAH - ART
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/jelajah/art', function () {
 
-    $path = public_path('art');
+    $folder = 'art';
+    $path = public_path($folder);
     $images = [];
 
     if (File::exists($path)) {
@@ -255,7 +201,7 @@ Route::get('/jelajah/art', function () {
         foreach (File::files($path) as $file) {
 
             $images[] = asset(
-                'art/' . $file->getFilename()
+                $folder . '/' . $file->getFilename()
             );
         }
     }
@@ -268,13 +214,16 @@ Route::get('/jelajah/art', function () {
 })->name('jelajah.art');
 
 
-// =====================================================
-// JELAJAH - MEME
-// =====================================================
+/*
+|--------------------------------------------------------------------------
+| JELAJAH - MEME
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/jelajah/meme', function () {
 
-    $path = public_path('memes');
+    $folder = 'memes';
+    $path = public_path($folder);
     $images = [];
 
     if (File::exists($path)) {
@@ -282,7 +231,7 @@ Route::get('/jelajah/meme', function () {
         foreach (File::files($path) as $file) {
 
             $images[] = asset(
-                'memes/' . $file->getFilename()
+                $folder . '/' . $file->getFilename()
             );
         }
     }
@@ -293,3 +242,81 @@ Route::get('/jelajah/meme', function () {
     );
 
 })->name('jelajah.meme');
+
+
+/*
+|--------------------------------------------------------------------------
+| USER LOGIN ONLY
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/dashboard', function () {
+
+        $path = public_path('images');
+        $images = [];
+
+        if (File::exists($path)) {
+
+            foreach (File::files($path) as $file) {
+
+                $images[] = asset(
+                    'images/' . $file->getFilename()
+                );
+            }
+        }
+
+        return view(
+            'dashboard.dashboard',
+            compact('images')
+        );
+
+    })->name('dashboard');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD GALERI
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/upload', [GalleryController::class, 'create'])
+        ->name('gallery.create');
+
+    Route::post('/upload', [GalleryController::class, 'store'])
+        ->name('gallery.store');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE GALERI
+    |--------------------------------------------------------------------------
+    */
+
+    Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])
+        ->name('gallery.destroy');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE / AKUN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/akun', [ProfileController::class, 'index'])
+        ->name('akun');
+
+    Route::get('/akun/edit', [ProfileController::class, 'edit'])
+        ->name('akun.edit');
+
+    Route::post('/akun/update', [ProfileController::class, 'update'])
+        ->name('akun.update');
+
+});

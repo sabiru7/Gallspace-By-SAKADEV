@@ -17,27 +17,27 @@
     @endif
 
     {{-- FORM UPLOAD --}}
-    <form action="{{ route('gallery.store') }}" 
-          method="POST" 
+    <form action="{{ route('gallery.store') }}"
+          method="POST"
           enctype="multipart/form-data"
           class="bg-zinc-900 p-6 rounded-xl shadow-xl space-y-4">
         @csrf
 
         {{-- DRAG & DROP AREA --}}
-        <div id="drop-area" 
+        <div id="drop-area"
              class="border-2 border-dashed border-gray-600 rounded-lg p-10 text-center cursor-pointer hover:border-white transition">
             <p class="text-gray-400">Choose a file or drag and drop it here</p>
             <p class="text-xs text-gray-500">JPG, PNG max 20MB</p>
 
             <input type="file" name="image" id="fileInput" hidden required>
 
-            <img id="preview" 
+            <img id="preview"
                  class="mx-auto mt-4 hidden max-h-60 rounded-lg"/>
         </div>
 
         {{-- TITLE --}}
-        <input type="text" 
-               name="title" 
+        <input type="text"
+               name="title"
                placeholder="Add a title"
                class="w-full bg-zinc-800 p-3 rounded text-white"
                required>
@@ -92,7 +92,7 @@
                 <div class="bg-zinc-900 p-3 rounded-lg shadow hover:scale-105 transition">
 
                     {{-- IMAGE --}}
-                    <img src="{{ asset($imagePath) }}" 
+                    <img src="{{ asset($imagePath) }}"
                          class="rounded-lg mb-2 w-full object-cover">
 
                     {{-- TITLE --}}
@@ -109,7 +109,7 @@
 
                     {{-- DOWNLOAD --}}
                     @if($allowDownload)
-                        <a href="{{ asset($imagePath) }}" 
+                        <a href="{{ asset($imagePath) }}"
                            download
                            class="text-xs text-blue-400 hover:underline">
                            Download

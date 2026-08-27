@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,9 +19,15 @@ class GalleryController extends Controller
 
     public function index()
     {
-        $images = Post::latest()->get();
+        $images = Post::with('user')
+            ->withCount(['likes', 'comments'])
+            ->latest()
+            ->get();
 
-        return view('dashboard.dashboard', compact('images'));
+        return view(
+            'dashboard.dashboard',
+            compact('images')
+        );
     }
 
 
@@ -30,9 +37,6 @@ class GalleryController extends Controller
 
     public function create()
     {
-        // File:
-        // resources/views/dashboard/upload.blade.php
-
         return view('dashboard.upload');
     }
 
@@ -48,7 +52,6 @@ class GalleryController extends Controller
             'title' => 'required|string|max:255',
         ]);
 
-
         // Pastikan folder public/images ada
         $path = public_path($this->imagePath);
 
@@ -56,10 +59,8 @@ class GalleryController extends Controller
             File::makeDirectory($path, 0755, true);
         }
 
-
         // Ambil file
         $file = $request->file('image');
-
 
         // Buat nama file unik
         $filename = time()
@@ -68,24 +69,22 @@ class GalleryController extends Controller
             . '.'
             . $file->getClientOriginalExtension();
 
-
-        // Simpan ke:
-        // public/images
+        // Simpan file
         $file->move($path, $filename);
 
-
-        // Simpan data ke database
+        // Simpan database
         Post::create([
             'user_id' => Auth::id(),
             'image'   => $filename,
             'title'   => $request->input('title'),
         ]);
 
-
-        // Setelah upload kembali ke akun
         return redirect()
             ->route('akun')
-            ->with('success', 'Image uploaded successfully!');
+            ->with(
+                'success',
+                'Image uploaded successfully!'
+            );
     }
 
 
@@ -97,32 +96,33 @@ class GalleryController extends Controller
     {
         $post = Post::findOrFail($id);
 
-
-        // Pastikan hanya pemilik yang bisa menghapus
+        // Hanya pemilik yang boleh menghapus
         if ($post->user_id !== Auth::id()) {
             return back()
-                ->with('error', 'Unauthorized action.');
+                ->with(
+                    'error',
+                    'Unauthorized action.'
+                );
         }
-
 
         // Lokasi file
         $filePath = public_path(
             $this->imagePath . '/' . $post->image
         );
 
-
         // Hapus file
         if (File::exists($filePath)) {
             File::delete($filePath);
         }
 
-
         // Hapus database
         $post->delete();
 
-
         return back()
-            ->with('success', 'Image deleted successfully.');
+            ->with(
+                'success',
+                'Image deleted successfully.'
+            );
     }
 
 
@@ -132,9 +132,201 @@ class GalleryController extends Controller
 
     public function show($id)
     {
+        $post = Post::with('user')
+            ->withCount(['likes', 'comments'])
+            ->findOrFail($id);
+
+        // Cek apakah user sedang login dan sudah like
+        $liked = false;
+
+        if (Auth::check()) {
+
+            $liked = DB::table('likes')
+                ->where('post_id', $post->id)
+                ->where('user_id', Auth::id())
+                ->exists();
+        }
+
+        // Ambil semua comment
+        $comments = DB::table('comments')
+            ->join(
+                'users',
+                'comments.user_id',
+                '=',
+                'users.id'
+            )
+            ->where(
+                'comments.post_id',
+                $post->id
+            )
+            ->select(
+                'comments.*',
+                'users.name as user_name'
+            )
+            ->latest('comments.created_at')
+            ->get();
+
+        return view(
+            'gallery.show',
+            compact(
+                'post',
+                'liked',
+                'comments'
+            )
+        );
+    }
+
+
+    // =====================================================
+    // LIKE / UNLIKE
+    // =====================================================
+
+    public function like($id)
+    {
+        // Pastikan user login
+        if (!Auth::check()) {
+            return redirect()
+                ->route('login')
+                ->with(
+                    'error',
+                    'Please login first.'
+                );
+        }
+
         $post = Post::findOrFail($id);
 
-        return view('gallery.show', compact('post'));
+        // Cek apakah sudah like
+        $existingLike = DB::table('likes')
+            ->where('post_id', $post->id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($existingLike) {
+
+            // UNLIKE
+            DB::table('likes')
+                ->where('id', $existingLike->id)
+                ->delete();
+
+            return back()
+                ->with(
+                    'success',
+                    'Like removed.'
+                );
+        }
+
+        // LIKE
+        DB::table('likes')->insert([
+            'post_id' => $post->id,
+            'user_id' => Auth::id(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return back()
+            ->with(
+                'success',
+                'Post liked!'
+            );
+    }
+
+
+    // =====================================================
+    // TAMBAH COMMENT
+    // =====================================================
+
+    public function comment(
+        Request $request,
+        $id
+    ) {
+        // Pastikan login
+        if (!Auth::check()) {
+            return redirect()
+                ->route('login')
+                ->with(
+                    'error',
+                    'Please login first.'
+                );
+        }
+
+        $request->validate([
+            'comment' =>
+                'required|string|max:1000',
+        ]);
+
+        $post = Post::findOrFail($id);
+
+        // Cek apakah pemilik mengizinkan comment
+        if (!$post->allow_comment) {
+
+            return back()
+                ->with(
+                    'error',
+                    'Comments are disabled for this post.'
+                );
+        }
+
+        // Simpan comment
+        DB::table('comments')->insert([
+            'post_id' => $post->id,
+            'user_id' => Auth::id(),
+            'comment' => $request->input('comment'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return back()
+            ->with(
+                'success',
+                'Comment added successfully!'
+            );
+    }
+
+
+    // =====================================================
+    // DELETE COMMENT
+    // =====================================================
+
+    public function deleteComment($id)
+    {
+        if (!Auth::check()) {
+            return redirect()
+                ->route('login');
+        }
+
+        // Cari comment
+        $comment = DB::table('comments')
+            ->where('id', $id)
+            ->first();
+
+        if (!$comment) {
+            return back()
+                ->with(
+                    'error',
+                    'Comment not found.'
+                );
+        }
+
+        // Hanya pemilik comment
+        // yang boleh menghapus
+        if ($comment->user_id !== Auth::id()) {
+
+            return back()
+                ->with(
+                    'error',
+                    'Unauthorized action.'
+                );
+        }
+
+        DB::table('comments')
+            ->where('id', $id)
+            ->delete();
+
+        return back()
+            ->with(
+                'success',
+                'Comment deleted successfully.'
+            );
     }
 
 
@@ -144,9 +336,16 @@ class GalleryController extends Controller
 
     public function akun()
     {
-        $images = Post::where('user_id', Auth::id())
-            ->latest()
-            ->get();
+        $images = Post::where(
+            'user_id',
+            Auth::id()
+        )
+        ->withCount([
+            'likes',
+            'comments'
+        ])
+        ->latest()
+        ->get();
 
         return view(
             'akun.akun',
@@ -161,24 +360,32 @@ class GalleryController extends Controller
 
     public function trending()
     {
-        $images = Post::latest()->get();
+        $images = Post::with('user')
+            ->withCount([
+                'likes',
+                'comments'
+            ])
+            ->latest()
+            ->get();
 
         $trendingPath = public_path('trending');
-        $trendingImages = [];
 
+        $trendingImages = [];
 
         if (File::exists($trendingPath)) {
 
-            $files = File::files($trendingPath);
+            $files = File::files(
+                $trendingPath
+            );
 
             foreach ($files as $file) {
 
                 $trendingImages[] = asset(
-                    'trending/' . $file->getFilename()
+                    'trending/' .
+                    $file->getFilename()
                 );
             }
         }
-
 
         return view(
             'jelajah.jelajah',
@@ -246,11 +453,13 @@ class GalleryController extends Controller
     // LOAD IMAGE DARI FOLDER
     // =====================================================
 
-    private function loadImages($folder, $viewName)
-    {
+    private function loadImages(
+        $folder,
+        $viewName
+    ) {
         $path = public_path($folder);
-        $images = [];
 
+        $images = [];
 
         if (File::exists($path)) {
 
@@ -259,11 +468,12 @@ class GalleryController extends Controller
             foreach ($files as $file) {
 
                 $images[] = asset(
-                    $folder . '/' . $file->getFilename()
+                    $folder .
+                    '/' .
+                    $file->getFilename()
                 );
             }
         }
-
 
         return view(
             $viewName,
@@ -276,13 +486,16 @@ class GalleryController extends Controller
     // DELETE IMAGE DARI FOLDER
     // =====================================================
 
-    public function deleteFolderImage(Request $request)
-    {
+    public function deleteFolderImage(
+        Request $request
+    ) {
         $request->validate([
-            'folder'   => 'required|string',
-            'filename' => 'required|string',
-        ]);
+            'folder' =>
+                'required|string',
 
+            'filename' =>
+                'required|string',
+        ]);
 
         // Folder yang diperbolehkan
         $allowedFolders = [
@@ -296,20 +509,27 @@ class GalleryController extends Controller
             'post',
         ];
 
-
         // Cegah akses folder lain
-        if (!in_array($request->folder, $allowedFolders)) {
+        if (
+            !in_array(
+                $request->folder,
+                $allowedFolders
+            )
+        ) {
 
             return back()
-                ->with('error', 'Invalid folder.');
+                ->with(
+                    'error',
+                    'Invalid folder.'
+                );
         }
-
 
         // Path file
         $filePath = public_path(
-            $request->folder . '/' . $request->filename
+            $request->folder .
+            '/' .
+            $request->filename
         );
-
 
         // Hapus file
         if (File::exists($filePath)) {
@@ -322,7 +542,6 @@ class GalleryController extends Controller
                     'Image deleted successfully!'
                 );
         }
-
 
         return back()
             ->with(
